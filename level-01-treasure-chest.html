@@ -131,6 +131,26 @@
     padding: .85rem 1.6rem;
     border-radius: 999px;
     transition: transform .15s, box-shadow .15s, background .15s, opacity .15s;
+    touch-action: manipulation;
+  }
+
+  a.btn {
+    text-decoration: none;
+    display: inline-block;
+    color: inherit;
+  }
+
+  #btn-start {
+    position: relative;
+    z-index: 5;
+  }
+
+  .ipad-tip {
+    max-width: 28rem;
+    margin-top: 1rem;
+    font-size: .88rem;
+    color: var(--fog-dim);
+    line-height: 1.4;
   }
 
   .btn:disabled {
@@ -190,6 +210,8 @@
   }
 
   #lesson.visible { display: block; }
+  #lesson:target { display: block; }
+  body:has(#lesson:target) #title-screen { display: none; }
 
   .topbar {
     display: flex;
@@ -506,7 +528,8 @@
     in Python! Learn <strong>variables</strong> and <code style="color:var(--gold)">print()</code>
     to claim your loot. Ready for a challenge?
   </div>
-  <button type="button" class="btn btn-gold" id="btn-start">Enter the Cave ⚔️</button>
+  <a class="btn btn-gold" id="btn-start" href="#lesson">Enter the Cave ⚔️</a>
+  <p class="ipad-tip">On iPad: if this button does nothing, open the lesson from the Safari web link (Files preview often blocks code).</p>
 </section>
 
 <!-- ========== LESSON ========== -->
@@ -732,12 +755,22 @@
   }
 
   // ---- Start ----
-  btnStart.addEventListener("click", function () {
+  btnStart.addEventListener("click", function (e) {
+    // Allow hash navigation for no-JS / Quick Look fallback; still run JS path when available
+    if (e && typeof e.preventDefault === "function") e.preventDefault();
+    titleScreen.classList.add("hidden");
+    lesson.classList.add("visible");
+    try { location.hash = "lesson"; } catch (_) {}
+    if (!pyReady && !pyodide) loadPyodideAsync();
+    try { editor.focus(); } catch (_) {}
+  });
+
+  // If opened already at #lesson (or CSS :target path), start Pyodide when JS is available
+  if (location.hash === "#lesson") {
     titleScreen.classList.add("hidden");
     lesson.classList.add("visible");
     if (!pyReady && !pyodide) loadPyodideAsync();
-    editor.focus();
-  });
+  }
 
   btnClearOut.addEventListener("click", function () {
     setConsole('<span class="muted">Output cleared.</span>');
