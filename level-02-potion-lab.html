@@ -675,6 +675,8 @@
       <p class="challenge-desc">
         Create <code>power = (8 + 4) * 3</code> using parentheses so addition happens first,
         then print <code>power</code>. The console should show <strong>36</strong>.
+        Put the <code>*</code> between <code>)</code> and <code>3</code> — write
+        <code>(8 + 4) * 3</code>, not <code>(8 + 4)(3)</code>.
       </p>
       <div class="toolbar">
         <button type="button" class="btn btn-check btn-sm" data-check="2" disabled>Check</button>
@@ -735,7 +737,7 @@
       "The * must appear in your source — printing 21 alone won’t pass."
     ],
     [
-      "Use parentheses around the add: power = (8 + 4) * 3",
+      "Remember the *: power = (8 + 4) * 3 — the star goes between ) and 3 (not (8 + 4)(3)).",
       "Then shout it: print(power)",
       "Without ( ), 8 + 4 * 3 is 20 — parentheses make it 36!"
     ]
@@ -905,6 +907,13 @@ sys.stdout = _pyquest_stdout
 sys.stderr = _pyquest_stderr
 `);
 
+    // Restore builtins shadowed by prior runs (e.g. print = 6)
+    await pyodide.runPythonAsync(`
+import builtins
+for _b in ("print", "input", "int", "float", "str", "len", "sum", "list", "dict", "range", "type", "abs", "min", "max", "round", "bool", "open"):
+    globals()[_b] = getattr(builtins, _b)
+`);
+
     // Wipe challenge vars so each Check is honest
     await pyodide.runPythonAsync(`
 for _n in ("herbs", "water", "batches", "drops_per_batch", "power", "mix", "heat", "cooled", "total"):
@@ -959,6 +968,49 @@ json.dumps(_out)
     };
   }
 
+  function looksLikeSameFailure(blob, errMsg) {
+    const a = String(blob || "");
+    const b = String(errMsg || "");
+    if (!a.trim()) return false;
+    if (/Traceback \(most recent call last\)/i.test(a)) return true;
+    const pick = (s) => {
+      const m = s.match(/(TypeError|NameError|SyntaxError|ValueError|AttributeError|IndexError|KeyError|ZeroDivisionError|IndentationError)[^\n]*/);
+      return m ? m[0] : "";
+    };
+    const ea = pick(a);
+    const eb = pick(b);
+    return !!(ea && eb && ea === eb);
+  }
+
+  function formatRunConsole(result) {
+    let html = "";
+    const errMsg = result.error ? (result.error.message || String(result.error)) : "";
+    if (result.error) {
+      if (result.stdout) {
+        const out = String(result.stdout);
+        if (!looksLikeSameFailure(out, errMsg)) {
+          html += escapeHtml(out);
+        }
+      }
+      if (result.stderr) {
+        const err = String(result.stderr).trim();
+        if (err && err.length < 400 && !looksLikeSameFailure(err, errMsg)) {
+          html += (html ? "\n" : "") + '<span class="err">' + escapeHtml(result.stderr) + "</span>";
+        }
+      }
+      html += (html ? "\n" : "") +
+        '<span class="err">Python says:\n' + escapeHtml(friendlyError(errMsg)) + "</span>";
+      return html;
+    }
+    if (result.stdout) {
+      html += escapeHtml(result.stdout);
+    }
+    if (result.stderr) {
+      html += (html ? "\n" : "") + '<span class="err">' + escapeHtml(result.stderr) + "</span>";
+    }
+    return html;
+  }
+
   async function runUserCode() {
     const code = editor.value;
     if (!code.trim()) {
@@ -968,18 +1020,7 @@ json.dumps(_out)
     setConsole('<span class="muted">Running…</span>');
     try {
       const result = await executeCode(code, []);
-      let html = "";
-      if (result.stdout) {
-        html += escapeHtml(result.stdout);
-      }
-      if (result.stderr) {
-        html += (html ? "\n" : "") + '<span class="err">' + escapeHtml(result.stderr) + "</span>";
-      }
-      if (result.error) {
-        const msg = result.error.message || String(result.error);
-        html += (html ? "\n" : "") +
-          '<span class="err">Python says:\n' + escapeHtml(friendlyError(msg)) + "</span>";
-      }
+      let html = formatRunConsole(result);
       if (!html) {
         html = '<span class="muted">(Ran successfully — nothing was printed. Try print(…)!)</span>';
       }
@@ -990,10 +1031,37 @@ json.dumps(_out)
   }
 
   function friendlyError(msg) {
-    let m = msg.replace(/^PythonError:\s*/i, "");
-    if (m.length > 1200) m = m.slice(0, 1200) + "…";
-    return m;
+    const text = String(msg || "");
+    const lines = text.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
+    const errRe = /^(TypeError|NameError|SyntaxError|ValueError|AttributeError|IndexError|KeyError|ZeroDivisionError|IndentationError|TabError|UnboundLocalError|OverflowError|RuntimeError|RecursionError|ModuleNotFoundError|ImportError|AssertionError|OSError|MemoryError):\s*/;
+    let last = "";
+    for (let i = lines.length - 1; i >= 0; i--) {
+      const line = lines[i];
+      if (errRe.test(line)) {
+        last = line;
+        break;
+      }
+    }
+    if (!last) {
+      for (let i = lines.length - 1; i >= 0; i--) {
+        const line = lines[i];
+        if (/^Traceback\b|^File\s+"|^\s*at\s+|PythonError:\s*$/i.test(line)) continue;
+        last = line.replace(/^PythonError:\s*/i, "");
+        if (last) break;
+      }
+    }
+    if (!last) {
+      last = text.replace(/^PythonError:\s*/i, "").trim();
+      if (last.length > 240) last = last.slice(0, 240) + "…";
+    }
+    if (/'int' object is not callable|'float' object is not callable/i.test(text) ||
+        /'int' object is not callable|'float' object is not callable/i.test(last)) {
+      last +=
+        "\n\nUsually this means a name like print got turned into a number, or you wrote (8 + 4)(3) instead of (8 + 4) * 3. Check for a missing * and that print still means print.";
+    }
+    return last;
   }
+
 
   function isNumberType(t) {
     return t === "int" || t === "float";
@@ -1041,16 +1109,14 @@ json.dumps(_out)
     try {
       const result = await executeCode(code, names);
 
-      let html = "";
-      if (result.stdout) html += escapeHtml(result.stdout);
       if (result.error) {
-        html += (html ? "\n" : "") +
-          '<span class="err">Python says:\n' + escapeHtml(friendlyError(result.error.message || String(result.error))) + "</span>";
-        setConsole(html || '<span class="err">Error</span>');
+        const html = formatRunConsole(result) || '<span class="err">Error</span>';
+        setConsole(html);
         fb.className = "feedback try";
         fb.textContent = "Fix the Python error first, then try Check again.";
         return;
       }
+      let html = formatRunConsole(result);
       if (!html) html = '<span class="muted">(No output — did you print?)</span>';
       setConsole(html);
 
