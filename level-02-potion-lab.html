@@ -1,0 +1,1173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>PyQuest — Level 2: Potion Lab</title>
+<style>
+  :root {
+    --cave-deep: #0d1117;
+    --cave-mid: #161b22;
+    --cave-panel: #1c2333;
+    --cave-border: #2d3a4f;
+    --gold: #f0c14b;
+    --gold-bright: #ffd76a;
+    --gold-dim: #c9a227;
+    --ember: #e67e22;
+    --sea: #3d9cf0;
+    --mint: #2ecc71;
+    --rose: #e74c3c;
+    --fog: #c9d1d9;
+    --fog-dim: #8b949e;
+    --shadow: rgba(0,0,0,.45);
+    --radius: 14px;
+    --font: "Segoe UI", system-ui, -apple-system, sans-serif;
+    --mono: "Cascadia Code", "Fira Code", "SF Mono", Consolas, monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    min-height: 100%;
+    background: var(--cave-deep);
+    color: var(--fog);
+    font-family: var(--font);
+    font-size: 17px;
+    line-height: 1.5;
+  }
+
+  body {
+    background:
+      radial-gradient(ellipse 80% 50% at 50% -10%, #1a2a0a 0%, transparent 55%),
+      radial-gradient(ellipse 60% 40% at 10% 90%, #0a1a2a 0%, transparent 50%),
+      radial-gradient(ellipse 50% 35% at 90% 80%, #2a0f1a 0%, transparent 45%),
+      var(--cave-deep);
+  }
+
+  /* ---- Title screen ---- */
+  #title-screen {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1.25rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  #title-screen.hidden { display: none; }
+
+  .cave-sparkles {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image:
+      radial-gradient(2px 2px at 20% 30%, var(--gold), transparent),
+      radial-gradient(2px 2px at 70% 20%, var(--gold-bright), transparent),
+      radial-gradient(1.5px 1.5px at 40% 70%, #fff8, transparent),
+      radial-gradient(2px 2px at 85% 60%, #7bed9f, transparent),
+      radial-gradient(1px 1px at 15% 80%, #fff6, transparent),
+      radial-gradient(1.5px 1.5px at 55% 45%, var(--gold-dim), transparent),
+      radial-gradient(2px 2px at 30% 55%, #a29bfe, transparent);
+    animation: twinkle 4s ease-in-out infinite alternate;
+  }
+
+  @keyframes twinkle {
+    from { opacity: .55; }
+    to { opacity: 1; }
+  }
+
+  .chest-emoji {
+    font-size: 5rem;
+    line-height: 1;
+    margin-bottom: .75rem;
+    filter: drop-shadow(0 8px 24px rgba(46,204,113,.35));
+    animation: bob 2.8s ease-in-out infinite;
+  }
+
+  @keyframes bob {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+
+  .brand {
+    font-size: .95rem;
+    letter-spacing: .22em;
+    text-transform: uppercase;
+    color: var(--gold-dim);
+    margin-bottom: .35rem;
+  }
+
+  h1 {
+    font-size: clamp(1.8rem, 5vw, 2.6rem);
+    color: var(--gold-bright);
+    text-shadow: 0 0 40px rgba(240,193,75,.25);
+    margin-bottom: 1rem;
+    font-weight: 800;
+  }
+
+  .story {
+    max-width: 34rem;
+    color: var(--fog);
+    font-size: 1.1rem;
+    margin-bottom: 1.75rem;
+    background: rgba(22,27,34,.65);
+    border: 1px solid var(--cave-border);
+    border-radius: var(--radius);
+    padding: 1.15rem 1.35rem;
+    backdrop-filter: blur(6px);
+  }
+
+  .story strong { color: var(--gold); }
+
+  .btn {
+    appearance: none;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    font-weight: 700;
+    font-size: 1.05rem;
+    padding: .85rem 1.6rem;
+    border-radius: 999px;
+    transition: transform .15s, box-shadow .15s, background .15s, opacity .15s;
+  }
+
+  .btn:disabled {
+    opacity: .45;
+    cursor: not-allowed;
+    transform: none !important;
+    box-shadow: none !important;
+  }
+
+  .btn:not(:disabled):hover { transform: translateY(-2px); }
+  .btn:not(:disabled):active { transform: translateY(0); }
+
+  .btn-gold {
+    background: linear-gradient(180deg, var(--gold-bright), var(--gold));
+    color: #1a1200;
+    box-shadow: 0 4px 20px rgba(240,193,75,.35);
+  }
+
+  .btn-gold:not(:disabled):hover {
+    box-shadow: 0 6px 28px rgba(240,193,75,.5);
+  }
+
+  .btn-sea {
+    background: linear-gradient(180deg, #5aadf5, var(--sea));
+    color: #041018;
+    box-shadow: 0 4px 16px rgba(61,156,240,.3);
+  }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--fog-dim);
+    border: 1px solid var(--cave-border);
+    font-weight: 600;
+    font-size: .9rem;
+    padding: .5rem 1rem;
+  }
+
+  .btn-ghost:not(:disabled):hover {
+    color: var(--gold);
+    border-color: var(--gold-dim);
+  }
+
+  .btn-check {
+    background: linear-gradient(180deg, #48d68a, var(--mint));
+    color: #041a0c;
+    box-shadow: 0 4px 16px rgba(46,204,113,.3);
+  }
+
+  .btn-sm { font-size: .92rem; padding: .6rem 1.15rem; }
+
+  /* ---- Main lesson ---- */
+  #lesson {
+    display: none;
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 1.25rem 1rem 3rem;
+  }
+
+  #lesson.visible { display: block; }
+
+  .topbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: .75rem;
+    margin-bottom: 1.25rem;
+    padding-bottom: .9rem;
+    border-bottom: 1px solid var(--cave-border);
+  }
+
+  .topbar h2 {
+    font-size: 1.25rem;
+    color: var(--gold);
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+  }
+
+  .status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    font-size: .82rem;
+    font-weight: 600;
+    padding: .35rem .75rem;
+    border-radius: 999px;
+    background: var(--cave-panel);
+    border: 1px solid var(--cave-border);
+  }
+
+  .status-pill.loading { color: var(--ember); }
+  .status-pill.ready { color: var(--mint); }
+  .status-pill.error { color: var(--rose); }
+
+  .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: currentColor;
+    animation: pulse 1.4s ease-in-out infinite;
+  }
+
+  .status-pill.ready .dot { animation: none; }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: .35; }
+  }
+
+  .panel {
+    background: var(--cave-panel);
+    border: 1px solid var(--cave-border);
+    border-radius: var(--radius);
+    padding: 1.15rem 1.25rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 8px 32px var(--shadow);
+  }
+
+  .panel h3 {
+    color: var(--gold-bright);
+    font-size: 1.1rem;
+    margin-bottom: .65rem;
+    display: flex;
+    align-items: center;
+    gap: .45rem;
+  }
+
+  .lesson-text p { margin-bottom: .65rem; color: var(--fog); }
+  .lesson-text p:last-child { margin-bottom: 0; }
+
+  .example-box {
+    background: var(--cave-deep);
+    border: 1px solid var(--cave-border);
+    border-left: 3px solid var(--gold);
+    border-radius: 8px;
+    padding: .75rem 1rem;
+    margin: .75rem 0;
+    font-family: var(--mono);
+    font-size: .92rem;
+    overflow-x: auto;
+  }
+
+  .example-box .comment { color: var(--fog-dim); }
+  .example-box .kw { color: #c678dd; }
+  .example-box .str { color: #98c379; }
+  .example-box .num { color: #d19a66; }
+  .example-box .fn { color: #61afef; }
+  .example-box .op { color: #56b6c2; }
+  .example-box .out {
+    color: var(--mint);
+    margin-top: .4rem;
+    display: block;
+    font-family: var(--mono);
+  }
+
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  @media (max-width: 720px) {
+    .grid-2 { grid-template-columns: 1fr; }
+  }
+
+  .editor-wrap label,
+  .console-wrap label {
+    display: block;
+    font-size: .8rem;
+    font-weight: 700;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: var(--fog-dim);
+    margin-bottom: .4rem;
+  }
+
+  #code-editor {
+    width: 100%;
+    min-height: 160px;
+    background: #0a0e14;
+    color: #e6edf3;
+    border: 1px solid var(--cave-border);
+    border-radius: 10px;
+    padding: .85rem 1rem;
+    font-family: var(--mono);
+    font-size: .95rem;
+    line-height: 1.55;
+    resize: vertical;
+    tab-size: 4;
+    outline: none;
+  }
+
+  #code-editor:focus {
+    border-color: var(--gold-dim);
+    box-shadow: 0 0 0 3px rgba(240,193,75,.15);
+  }
+
+  #console {
+    width: 100%;
+    min-height: 160px;
+    background: #080b10;
+    color: var(--fog);
+    border: 1px solid var(--cave-border);
+    border-radius: 10px;
+    padding: .85rem 1rem;
+    font-family: var(--mono);
+    font-size: .9rem;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    word-break: break-word;
+    overflow-y: auto;
+  }
+
+  #console .err { color: #ff7b72; }
+  #console .ok { color: var(--mint); }
+  #console .muted { color: var(--fog-dim); }
+
+  .toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem;
+    margin-top: .75rem;
+  }
+
+  /* Challenges */
+  .challenge {
+    border: 1px solid var(--cave-border);
+    border-radius: 12px;
+    padding: 1rem 1.1rem;
+    margin-bottom: .85rem;
+    background: rgba(13,17,23,.5);
+    transition: border-color .2s, box-shadow .2s;
+  }
+
+  .challenge.passed {
+    border-color: rgba(46,204,113,.5);
+    box-shadow: 0 0 20px rgba(46,204,113,.08);
+  }
+
+  .challenge-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: .5rem;
+    margin-bottom: .5rem;
+  }
+
+  .challenge-title {
+    font-weight: 700;
+    color: var(--fog);
+    font-size: 1.02rem;
+  }
+
+  .challenge.passed .challenge-title { color: var(--mint); }
+
+  .stars {
+    color: var(--gold);
+    letter-spacing: 2px;
+    font-size: 1.05rem;
+  }
+
+  .stars.empty { color: var(--cave-border); }
+
+  .challenge-desc {
+    color: var(--fog-dim);
+    font-size: .95rem;
+    margin-bottom: .75rem;
+  }
+
+  .challenge-desc code {
+    background: var(--cave-deep);
+    color: var(--gold);
+    padding: .1rem .35rem;
+    border-radius: 4px;
+    font-family: var(--mono);
+    font-size: .88em;
+  }
+
+  .hint-box {
+    display: none;
+    margin-top: .65rem;
+    padding: .65rem .85rem;
+    background: rgba(240,193,75,.08);
+    border: 1px dashed var(--gold-dim);
+    border-radius: 8px;
+    color: var(--gold-bright);
+    font-size: .92rem;
+  }
+
+  .hint-box.visible { display: block; }
+
+  .feedback {
+    margin-top: .55rem;
+    font-size: .92rem;
+    font-weight: 600;
+    min-height: 1.3em;
+  }
+
+  .feedback.win { color: var(--mint); }
+  .feedback.try { color: var(--ember); }
+
+  /* Completion */
+  #recap {
+    display: none;
+    text-align: center;
+    border: 2px solid var(--gold);
+    background:
+      radial-gradient(ellipse at 50% 0%, rgba(240,193,75,.12), transparent 60%),
+      var(--cave-panel);
+    animation: glow-in .6s ease;
+  }
+
+  #recap.visible { display: block; }
+
+  @keyframes glow-in {
+    from { opacity: 0; transform: scale(.97); }
+    to { opacity: 1; transform: scale(1); }
+  }
+
+  #recap h3 {
+    font-size: 1.4rem;
+    margin-bottom: .5rem;
+  }
+
+  #recap ul {
+    text-align: left;
+    max-width: 28rem;
+    margin: 1rem auto 0;
+    padding-left: 1.25rem;
+    color: var(--fog);
+  }
+
+  #recap li { margin-bottom: .4rem; }
+
+  .progress-bar {
+    display: flex;
+    gap: .4rem;
+    margin-bottom: 1rem;
+  }
+
+  .progress-seg {
+    flex: 1;
+    height: 6px;
+    border-radius: 3px;
+    background: var(--cave-border);
+    transition: background .3s;
+  }
+
+  .progress-seg.done {
+    background: linear-gradient(90deg, var(--gold-dim), var(--gold-bright));
+  }
+
+  .footer-note {
+    text-align: center;
+    color: var(--fog-dim);
+    font-size: .8rem;
+    margin-top: 1.5rem;
+  }
+
+  .op-table {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: .35rem .85rem;
+    margin: .75rem 0;
+    font-size: .95rem;
+  }
+
+  .op-table .sym {
+    font-family: var(--mono);
+    color: var(--gold);
+    font-weight: 700;
+  }
+</style>
+</head>
+<body>
+
+<!-- ========== TITLE SCREEN ========== -->
+<section id="title-screen">
+  <div class="cave-sparkles" aria-hidden="true"></div>
+  <div class="chest-emoji" aria-hidden="true">🧪</div>
+  <div class="brand">PyQuest</div>
+  <h1>Level 2: Potion Lab</h1>
+  <div class="story">
+    Beyond the treasure chest, a glowing <strong>potion laboratory</strong> hums with magic.
+    Bubbling flasks wait for a clever wizard who can <strong>count</strong>, <strong>add</strong>,
+    <strong>multiply</strong>, and mix with <strong>parentheses</strong>.
+    Master Python <strong>numbers &amp; math</strong> to brew the perfect elixir!
+  </div>
+  <button type="button" class="btn btn-gold" id="btn-start">Enter the Lab 🧙</button>
+</section>
+
+<!-- ========== LESSON ========== -->
+<main id="lesson">
+  <div class="topbar">
+    <h2><span aria-hidden="true">⚗️</span> Level 2 — Potion Lab</h2>
+    <div class="status-pill loading" id="py-status" role="status">
+      <span class="dot" aria-hidden="true"></span>
+      <span id="py-status-text">Loading Python…</span>
+    </div>
+  </div>
+
+  <div class="progress-bar" aria-label="Challenge progress">
+    <div class="progress-seg" id="prog-0"></div>
+    <div class="progress-seg" id="prog-1"></div>
+    <div class="progress-seg" id="prog-2"></div>
+  </div>
+
+  <!-- Mini-lesson -->
+  <section class="panel lesson-text">
+    <h3>📜 Quick Lesson: Numbers &amp; Math</h3>
+    <p>
+      Numbers don’t need quotes. Python can add, subtract, multiply, and divide them
+      with the symbols <code style="color:var(--gold)">+</code>
+      <code style="color:var(--gold)">-</code>
+      <code style="color:var(--gold)">*</code>
+      <code style="color:var(--gold)">/</code>.
+    </p>
+    <div class="op-table">
+      <span class="sym">+</span><span>add</span>
+      <span class="sym">-</span><span>subtract</span>
+      <span class="sym">*</span><span>multiply</span>
+      <span class="sym">/</span><span>divide (gives a decimal, like 5.0)</span>
+    </div>
+    <div class="example-box">
+      <span class="comment"># Mix two ingredients</span><br>
+      herbs = <span class="num">3</span><br>
+      water = <span class="num">2</span><br>
+      <span class="fn">print</span>(herbs <span class="op">+</span> water)<br>
+      <span class="out">→ 5</span>
+    </div>
+    <div class="example-box">
+      <span class="comment"># Multiply for bigger batches</span><br>
+      <span class="fn">print</span>(<span class="num">4</span> <span class="op">*</span> <span class="num">5</span>)<br>
+      <span class="out">→ 20</span>
+    </div>
+    <p>
+      <strong>Parentheses</strong> <code style="color:var(--gold)">( )</code> go first —
+      just like in school math. Without them, <code>*</code> and <code>/</code> happen before
+      <code>+</code> and <code>-</code>.
+    </p>
+    <div class="example-box">
+      <span class="comment"># Parentheses first!</span><br>
+      <span class="fn">print</span>((<span class="num">2</span> <span class="op">+</span> <span class="num">3</span>) <span class="op">*</span> <span class="num">4</span>)<br>
+      <span class="out">→ 20</span>
+      <span class="comment" style="display:block;margin-top:.35rem;"># Without ( ): 2 + 3 * 4 → 14</span>
+    </div>
+    <p>Time to brew. Real Python. Real potions. ✨</p>
+  </section>
+
+  <!-- Editor + console -->
+  <section class="panel">
+    <div class="grid-2">
+      <div class="editor-wrap">
+        <label for="code-editor">Your Python code</label>
+        <textarea id="code-editor" spellcheck="false" autocomplete="off"
+          placeholder="# Type your Python here…"></textarea>
+        <div class="toolbar">
+          <button type="button" class="btn btn-sea btn-sm" id="btn-run" disabled>▶ Run</button>
+          <button type="button" class="btn btn-ghost btn-sm" id="btn-clear-out">Clear output</button>
+        </div>
+      </div>
+      <div class="console-wrap">
+        <label for="console">Console</label>
+        <div id="console" role="log" aria-live="polite"><span class="muted">Output will appear here…</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Challenges -->
+  <section class="panel">
+    <h3>⚔️ Challenges</h3>
+    <p style="color:var(--fog-dim);margin-bottom:1rem;font-size:.95rem;">
+      Write code in the editor above, then hit <strong>Check</strong> for each challenge.
+      You can reuse or rewrite your code — just make sure it solves that challenge when you check.
+    </p>
+
+    <!-- Challenge 1 -->
+    <div class="challenge" id="ch-0" data-challenge="0">
+      <div class="challenge-header">
+        <div class="challenge-title"><span class="stars empty" id="stars-0">☆</span> Challenge 1 — Add the herbs</div>
+      </div>
+      <p class="challenge-desc">
+        Create <code>herbs = 4</code> and <code>water = 2</code>, then print their sum
+        using <code>+</code> so the console shows <strong>6</strong>.
+      </p>
+      <div class="toolbar">
+        <button type="button" class="btn btn-check btn-sm" data-check="0" disabled>Check</button>
+        <button type="button" class="btn btn-ghost btn-sm" data-hint="0">Hint</button>
+      </div>
+      <div class="hint-box" id="hint-0"></div>
+      <div class="feedback" id="fb-0"></div>
+    </div>
+
+    <!-- Challenge 2 -->
+    <div class="challenge" id="ch-1" data-challenge="1">
+      <div class="challenge-header">
+        <div class="challenge-title"><span class="stars empty" id="stars-1">☆</span> Challenge 2 — Multiply the drops</div>
+      </div>
+      <p class="challenge-desc">
+        A potion needs <code>batches = 3</code> and <code>drops_per_batch = 7</code>.
+        Print the total drops using multiplication
+        (<code>batches * drops_per_batch</code>) — the console should show <strong>21</strong>.
+      </p>
+      <div class="toolbar">
+        <button type="button" class="btn btn-check btn-sm" data-check="1" disabled>Check</button>
+        <button type="button" class="btn btn-ghost btn-sm" data-hint="1">Hint</button>
+      </div>
+      <div class="hint-box" id="hint-1"></div>
+      <div class="feedback" id="fb-1"></div>
+    </div>
+
+    <!-- Challenge 3 -->
+    <div class="challenge" id="ch-2" data-challenge="2">
+      <div class="challenge-header">
+        <div class="challenge-title"><span class="stars empty" id="stars-2">☆</span> Challenge 3 — Power with parentheses</div>
+      </div>
+      <p class="challenge-desc">
+        Create <code>power = (8 + 4) * 3</code> using parentheses so addition happens first,
+        then print <code>power</code>. The console should show <strong>36</strong>.
+      </p>
+      <div class="toolbar">
+        <button type="button" class="btn btn-check btn-sm" data-check="2" disabled>Check</button>
+        <button type="button" class="btn btn-ghost btn-sm" data-hint="2">Hint</button>
+      </div>
+      <div class="hint-box" id="hint-2"></div>
+      <div class="feedback" id="fb-2"></div>
+    </div>
+  </section>
+
+  <!-- Recap -->
+  <section class="panel" id="recap">
+    <h3>⭐ Level complete!</h3>
+    <p style="font-size:1.15rem;color:var(--gold-bright);">Your potion glows! The lab cheers your math magic!</p>
+    <p style="margin-top:.5rem;color:var(--fog);">What you learned:</p>
+    <ul>
+      <li><strong>Numbers</strong> are values without quotes — great for counting and measuring.</li>
+      <li><strong>+ − * /</strong> let you add, subtract, multiply, and divide in Python.</li>
+      <li><strong>Parentheses ( )</strong> control order: do the inside first, then the rest.</li>
+    </ul>
+    <p style="margin-top:1.25rem;font-size:1.05rem;">You’re ready for the next adventure. Brilliant brewing, wizard! 🧪✨</p>
+  </section>
+
+  <p class="footer-note">PyQuest · Real Python in your browser via Pyodide · No account needed</p>
+</main>
+
+<script>
+(function () {
+  "use strict";
+
+  // ---- DOM ----
+  const titleScreen = document.getElementById("title-screen");
+  const lesson = document.getElementById("lesson");
+  const btnStart = document.getElementById("btn-start");
+  const btnRun = document.getElementById("btn-run");
+  const btnClearOut = document.getElementById("btn-clear-out");
+  const editor = document.getElementById("code-editor");
+  const consoleEl = document.getElementById("console");
+  const pyStatus = document.getElementById("py-status");
+  const pyStatusText = document.getElementById("py-status-text");
+  const recap = document.getElementById("recap");
+
+  let pyodide = null;
+  let pyReady = false;
+  let pyLoading = null;
+  const passed = [false, false, false];
+  const hintIndex = [0, 0, 0];
+
+  const HINTS = [
+    [
+      "Make two number boxes: herbs = 4 and water = 2 (no quotes!).",
+      "Add them inside print: print(herbs + water)",
+      "You need the + sign in your code — don’t just print(6)."
+    ],
+    [
+      "Create batches = 3 and drops_per_batch = 7",
+      "Multiply with *: print(batches * drops_per_batch)",
+      "The * must appear in your source — printing 21 alone won’t pass."
+    ],
+    [
+      "Use parentheses around the add: power = (8 + 4) * 3",
+      "Then shout it: print(power)",
+      "Without ( ), 8 + 4 * 3 is 20 — parentheses make it 36!"
+    ]
+  ];
+
+  const WIN_MESSAGES = [
+    "Herbs mixed! The flask bubbles green. ⭐",
+    "Twenty-one drops — potion strength rising! ⭐⭐",
+    "Order of operations mastered. Full star brew! ⭐⭐⭐"
+  ];
+
+  // ---- UI helpers ----
+  function setConsole(html) {
+    consoleEl.innerHTML = html;
+  }
+
+  function setStatus(state, text) {
+    pyStatus.className = "status-pill " + state;
+    pyStatusText.textContent = text;
+  }
+
+  function setButtonsEnabled(on) {
+    btnRun.disabled = !on;
+    document.querySelectorAll("[data-check]").forEach(function (b) {
+      b.disabled = !on;
+    });
+  }
+
+  function updateProgress() {
+    for (let i = 0; i < 3; i++) {
+      document.getElementById("prog-" + i).classList.toggle("done", passed[i]);
+    }
+    if (passed.every(Boolean)) {
+      recap.classList.add("visible");
+      recap.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+  }
+
+  // ---- Start ----
+  btnStart.addEventListener("click", function () {
+    titleScreen.classList.add("hidden");
+    lesson.classList.add("visible");
+    if (!pyReady && !pyodide) loadPyodideAsync();
+    editor.focus();
+  });
+
+  btnClearOut.addEventListener("click", function () {
+    setConsole('<span class="muted">Output cleared.</span>');
+  });
+
+  // Tab key inserts spaces in textarea
+  editor.addEventListener("keydown", function (e) {
+    if (e.key === "Tab") {
+      e.preventDefault();
+      const start = editor.selectionStart;
+      const end = editor.selectionEnd;
+      editor.value = editor.value.slice(0, start) + "    " + editor.value.slice(end);
+      editor.selectionStart = editor.selectionEnd = start + 4;
+    }
+  });
+
+  // Hints
+  document.querySelectorAll("[data-hint]").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      const i = Number(btn.getAttribute("data-hint"));
+      const box = document.getElementById("hint-" + i);
+      const tips = HINTS[i];
+      const idx = hintIndex[i];
+      if (idx >= tips.length) {
+        box.textContent = "You’ve seen every hint for this one. You’ve got this — try again!";
+        box.classList.add("visible");
+        return;
+      }
+      box.textContent = "💡 Tip " + (idx + 1) + ": " + tips[idx];
+      box.classList.add("visible");
+      hintIndex[i] = idx + 1;
+      if (hintIndex[i] >= tips.length) {
+        btn.textContent = "Hints done";
+      } else {
+        btn.textContent = "Another hint";
+      }
+    });
+  });
+
+  // Check buttons
+  document.querySelectorAll("[data-check]").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      const i = Number(btn.getAttribute("data-check"));
+      checkChallenge(i);
+    });
+  });
+
+  btnRun.addEventListener("click", function () {
+    runUserCode();
+  });
+
+  // ---- Pyodide ----
+  async function loadPyodideAsync() {
+    if (pyReady) return;
+    if (pyLoading) return pyLoading;
+    setStatus("loading", "Loading Python…");
+    setButtonsEnabled(false);
+    pyLoading = (async function () {
+      try {
+        if (typeof loadPyodide !== "function") {
+          await new Promise(function (resolve, reject) {
+            const s = document.createElement("script");
+            s.src = "https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js";
+            s.onload = resolve;
+            s.onerror = function () {
+              reject(new Error("Could not load Pyodide script from CDN."));
+            };
+            document.head.appendChild(s);
+          });
+        }
+        pyodide = await loadPyodide({
+          indexURL: "https://cdn.jsdelivr.net/pyodide/v0.26.4/full/"
+        });
+        pyReady = true;
+        setStatus("ready", "Python ready");
+        setButtonsEnabled(true);
+        setConsole('<span class="ok">Python is ready. Type code and hit Run!</span>');
+      } catch (err) {
+        pyLoading = null;
+        setStatus("error", "Load failed");
+        setConsole(
+          '<span class="err">Couldn’t load Python. Check your internet connection and refresh the page.\n\n' +
+          escapeHtml(String(err.message || err)) + "</span>"
+        );
+      }
+    })();
+    return pyLoading;
+  }
+
+  function escapeHtml(s) {
+    return String(s)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
+
+  /**
+   * Run the editor code. Returns { ok, stdout, stderr, vars, usedPrint, code }.
+   */
+  async function executeCode(code, inspectNames) {
+    if (!pyReady || !pyodide) {
+      throw new Error("Python is still loading.");
+    }
+
+    await pyodide.runPythonAsync(`
+import sys
+from io import StringIO
+_pyquest_stdout = StringIO()
+_pyquest_stderr = StringIO()
+sys.stdout = _pyquest_stdout
+sys.stderr = _pyquest_stderr
+`);
+
+    // Wipe challenge vars so each Check is honest
+    await pyodide.runPythonAsync(`
+for _n in ("herbs", "water", "batches", "drops_per_batch", "power", "mix", "heat", "cooled", "total"):
+    globals().pop(_n, None)
+`);
+
+    let runError = null;
+    try {
+      await pyodide.runPythonAsync(code);
+    } catch (e) {
+      runError = e;
+    }
+
+    const stdout = await pyodide.runPythonAsync("_pyquest_stdout.getvalue()");
+    const stderr = await pyodide.runPythonAsync("_pyquest_stderr.getvalue()");
+
+    await pyodide.runPythonAsync("sys.stdout = sys.__stdout__; sys.stderr = sys.__stderr__");
+
+    const vars = {};
+    if (inspectNames && inspectNames.length) {
+      const blob = await pyodide.runPythonAsync(`
+import json
+_names = ${JSON.stringify(inspectNames)}
+_out = {}
+for _n in _names:
+    if _n in globals():
+        _v = globals()[_n]
+        _t = type(_v).__name__
+        if _t == "str":
+            _out[_n] = {"exists": True, "type": _t, "value": _v}
+        elif _t in ("int", "float", "bool"):
+            _out[_n] = {"exists": True, "type": _t, "value": _v}
+        else:
+            _out[_n] = {"exists": True, "type": _t, "value": str(_v)}
+    else:
+        _out[_n] = {"exists": False}
+json.dumps(_out)
+`);
+      Object.assign(vars, JSON.parse(blob));
+    }
+
+    const usedPrint = /\bprint\s*\(/.test(code);
+
+    return {
+      ok: !runError,
+      error: runError,
+      stdout: String(stdout || ""),
+      stderr: String(stderr || ""),
+      vars: vars,
+      usedPrint: usedPrint,
+      code: code
+    };
+  }
+
+  async function runUserCode() {
+    const code = editor.value;
+    if (!code.trim()) {
+      setConsole('<span class="muted">Nothing to run — type some Python first!</span>');
+      return;
+    }
+    setConsole('<span class="muted">Running…</span>');
+    try {
+      const result = await executeCode(code, []);
+      let html = "";
+      if (result.stdout) {
+        html += escapeHtml(result.stdout);
+      }
+      if (result.stderr) {
+        html += (html ? "\n" : "") + '<span class="err">' + escapeHtml(result.stderr) + "</span>";
+      }
+      if (result.error) {
+        const msg = result.error.message || String(result.error);
+        html += (html ? "\n" : "") +
+          '<span class="err">Python says:\n' + escapeHtml(friendlyError(msg)) + "</span>";
+      }
+      if (!html) {
+        html = '<span class="muted">(Ran successfully — nothing was printed. Try print(…)!)</span>';
+      }
+      setConsole(html);
+    } catch (err) {
+      setConsole('<span class="err">Python says: ' + escapeHtml(String(err.message || err)) + "</span>");
+    }
+  }
+
+  function friendlyError(msg) {
+    let m = msg.replace(/^PythonError:\s*/i, "");
+    if (m.length > 1200) m = m.slice(0, 1200) + "…";
+    return m;
+  }
+
+  function isNumberType(t) {
+    return t === "int" || t === "float";
+  }
+
+  function stdoutContains(stdout, piece) {
+    return String(stdout).indexOf(String(piece)) !== -1;
+  }
+
+  /** True if stdout has the number as its own token (not buried in a larger number). */
+  function stdoutShowsNumber(stdout, n) {
+    const s = String(stdout);
+    // Match integer or float form (6, 6.0)
+    const re = new RegExp("(^|[^0-9.])" + String(n) + "(\\.0+)?([^0-9.]|$)");
+    return re.test(s);
+  }
+
+  function hasOperatorOutsideStrings(code, op) {
+    // Strip string literals, then look for the operator
+    const stripped = code.replace(/(["'])(?:\\.|(?!\1).)*\1/g, '""');
+    if (op === "+") return /\+/.test(stripped);
+    if (op === "*") return /\*/.test(stripped);
+    if (op === "(") return /\(/.test(stripped);
+    return stripped.indexOf(op) !== -1;
+  }
+
+  async function checkChallenge(index) {
+    const code = editor.value;
+    const fb = document.getElementById("fb-" + index);
+
+    if (!code.trim()) {
+      fb.className = "feedback try";
+      fb.textContent = "Write some code in the editor first, then Check!";
+      return;
+    }
+
+    fb.className = "feedback";
+    fb.textContent = "Checking…";
+
+    const names =
+      index === 0 ? ["herbs", "water"] :
+      index === 1 ? ["batches", "drops_per_batch"] :
+      ["power"];
+
+    try {
+      const result = await executeCode(code, names);
+
+      let html = "";
+      if (result.stdout) html += escapeHtml(result.stdout);
+      if (result.error) {
+        html += (html ? "\n" : "") +
+          '<span class="err">Python says:\n' + escapeHtml(friendlyError(result.error.message || String(result.error))) + "</span>";
+        setConsole(html || '<span class="err">Error</span>');
+        fb.className = "feedback try";
+        fb.textContent = "Fix the Python error first, then try Check again.";
+        return;
+      }
+      if (!html) html = '<span class="muted">(No output — did you print?)</span>';
+      setConsole(html);
+
+      let ok = false;
+      let tip = "";
+
+      if (index === 0) {
+        // herbs = 4, water = 2, print sum with +
+        const herbs = result.vars.herbs;
+        const water = result.vars.water;
+        if (!herbs || !herbs.exists) {
+          tip = "Create herbs = 4 (a number, no quotes).";
+        } else if (!isNumberType(herbs.type)) {
+          tip = "herbs should be a number. Use herbs = 4 (no quotes).";
+        } else if (Number(herbs.value) !== 4) {
+          tip = "herbs should equal 4 for this challenge.";
+        } else if (!water || !water.exists) {
+          tip = "Also create water = 2.";
+        } else if (!isNumberType(water.type)) {
+          tip = "water should be a number. Use water = 2 (no quotes).";
+        } else if (Number(water.value) !== 2) {
+          tip = "water should equal 2 for this challenge.";
+        } else if (!result.usedPrint) {
+          tip = "Print the sum: print(herbs + water)";
+        } else if (!hasOperatorOutsideStrings(code, "+")) {
+          tip = "Use the + operator to add — don’t just print(6).";
+        } else if (!stdoutShowsNumber(result.stdout, 6)) {
+          tip = "Your print should show 6 (the sum of herbs + water).";
+        } else {
+          // Prefer that print actually uses the vars or an addition expression
+          const printUsesMath =
+            /print\s*\([^)]*\+/.test(code) ||
+            (/print\s*\([^)]*\bherbs\b/.test(code) && /print\s*\([^)]*\bwater\b/.test(code)) ||
+            /\w+\s*=\s*[^\n]*\+/.test(code);
+          if (!printUsesMath && !hasOperatorOutsideStrings(code, "+")) {
+            tip = "Add with +: print(herbs + water)";
+          } else if (!printUsesMath) {
+            // Has + somewhere — check it's related to the sum
+            const hasAddExpr =
+              /\bherbs\s*\+\s*water\b/.test(code) ||
+              /\bwater\s*\+\s*herbs\b/.test(code) ||
+              /print\s*\([^)]*\+/.test(code);
+            if (!hasAddExpr) {
+              tip = "Print herbs + water (with the plus sign between them).";
+            } else {
+              ok = true;
+            }
+          } else {
+            ok = true;
+          }
+        }
+      } else if (index === 1) {
+        // batches = 3, drops_per_batch = 7, print product with *
+        const batches = result.vars.batches;
+        const drops = result.vars.drops_per_batch;
+        if (!batches || !batches.exists) {
+          tip = "Create batches = 3 (a number, no quotes).";
+        } else if (!isNumberType(batches.type)) {
+          tip = "batches should be a number. Use batches = 3.";
+        } else if (Number(batches.value) !== 3) {
+          tip = "batches should equal 3 for this challenge.";
+        } else if (!drops || !drops.exists) {
+          tip = "Also create drops_per_batch = 7.";
+        } else if (!isNumberType(drops.type)) {
+          tip = "drops_per_batch should be a number. Use drops_per_batch = 7.";
+        } else if (Number(drops.value) !== 7) {
+          tip = "drops_per_batch should equal 7 for this challenge.";
+        } else if (!result.usedPrint) {
+          tip = "Print the product: print(batches * drops_per_batch)";
+        } else if (!hasOperatorOutsideStrings(code, "*")) {
+          tip = "Use the * operator to multiply — don’t just print(21).";
+        } else if (!stdoutShowsNumber(result.stdout, 21)) {
+          tip = "Your print should show 21 (batches times drops_per_batch).";
+        } else {
+          const hasMulExpr =
+            /\bbatches\s*\*\s*drops_per_batch\b/.test(code) ||
+            /\bdrops_per_batch\s*\*\s*batches\b/.test(code) ||
+            /print\s*\([^)]*\*/.test(code) ||
+            /\w+\s*=\s*[^\n]*\*/.test(code);
+          if (!hasMulExpr) {
+            tip = "Multiply with *: print(batches * drops_per_batch)";
+          } else {
+            ok = true;
+          }
+        }
+      } else if (index === 2) {
+        // power = (8 + 4) * 3 → 36, print power; require parentheses
+        const power = result.vars.power;
+        if (!power || !power.exists) {
+          tip = "Create power = (8 + 4) * 3 — remember the parentheses!";
+        } else if (!isNumberType(power.type)) {
+          tip = "power should be a number from a math expression.";
+        } else if (Number(power.value) !== 36) {
+          tip = "power should equal 36. Try power = (8 + 4) * 3";
+        } else if (!/\(/.test(code) || !/\)/.test(code)) {
+          tip = "Use parentheses ( ) so addition happens before multiplication.";
+        } else if (!hasOperatorOutsideStrings(code, "+") || !hasOperatorOutsideStrings(code, "*")) {
+          tip = "Your expression needs both + and * — like (8 + 4) * 3";
+        } else if (!result.usedPrint) {
+          tip = "Print it: print(power)";
+        } else if (!stdoutShowsNumber(result.stdout, 36)) {
+          tip = "Your print should show 36.";
+        } else {
+          // Require parens around an addition (or similar) — flexible pattern
+          const hasParenAdd =
+            /\([^)]*\+[^)]*\)/.test(code) ||
+            /\(\s*\d+\s*\+\s*\d+\s*\)/.test(code);
+          if (!hasParenAdd) {
+            tip = "Put parentheses around the addition: (8 + 4) * 3";
+          } else {
+            // Also require print uses power or prints the expression
+            const printOk =
+              /print\s*\([^)]*\bpower\b/.test(code) ||
+              /print\s*\([^)]*\(/.test(code);
+            if (!printOk && !stdoutShowsNumber(result.stdout, 36)) {
+              tip = "print(power) so the console shows 36.";
+            } else {
+              ok = true;
+            }
+          }
+        }
+      }
+
+      if (ok) {
+        passed[index] = true;
+        const ch = document.getElementById("ch-" + index);
+        ch.classList.add("passed");
+        const stars = document.getElementById("stars-" + index);
+        stars.textContent = "★";
+        stars.classList.remove("empty");
+        fb.className = "feedback win";
+        fb.textContent = WIN_MESSAGES[index];
+        updateProgress();
+      } else {
+        fb.className = "feedback try";
+        fb.textContent = tip || "Not quite — tweak your code and try again!";
+      }
+    } catch (err) {
+      fb.className = "feedback try";
+      fb.textContent = "Something went wrong: " + (err.message || err);
+      setConsole('<span class="err">Python says: ' + escapeHtml(String(err.message || err)) + "</span>");
+    }
+  }
+
+  // Prefill a tiny starter comment
+  editor.value = '# Challenge 1 starter idea:\n# herbs = 4\n# water = 2\n# print(herbs + water)\n';
+
+  // Warm-load Pyodide in the background while they read the title
+  loadPyodideAsync();
+})();
+</script>
+</body>
+</html>
