@@ -227,6 +227,29 @@
     gap: .5rem;
   }
 
+  .topbar-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .5rem;
+  }
+
+  .btn-jump-code {
+    background: rgba(240,193,75,.12);
+    color: var(--gold-bright);
+    border: 1px solid var(--gold-dim);
+    font-size: .88rem;
+    padding: .5rem 1rem;
+    border-radius: 999px;
+    font-weight: 700;
+  }
+
+  .btn-jump-code:hover {
+    background: rgba(240,193,75,.22);
+    color: var(--gold-bright);
+    border-color: var(--gold);
+  }
+
   .status-pill {
     display: inline-flex;
     align-items: center;
@@ -288,6 +311,36 @@
     font-family: var(--mono);
     font-size: .92rem;
     overflow-x: auto;
+    position: relative;
+  }
+
+  .example-box .example-code {
+    display: block;
+  }
+
+  .example-box .try-example {
+    margin-top: .65rem;
+    appearance: none;
+    border: 1px solid var(--gold-dim);
+    background: rgba(240,193,75,.1);
+    color: var(--gold-bright);
+    font-family: var(--font);
+    font-weight: 700;
+    font-size: .82rem;
+    padding: .4rem .85rem;
+    border-radius: 999px;
+    cursor: pointer;
+    touch-action: manipulation;
+  }
+
+  .example-box .try-example:hover {
+    background: rgba(240,193,75,.22);
+  }
+
+  .example-box .try-example.copied {
+    border-color: var(--mint);
+    color: var(--mint);
+    background: rgba(46,204,113,.12);
   }
 
   .example-box .comment { color: var(--fog-dim); }
@@ -322,11 +375,43 @@
 
   .math-chip span { color: var(--fog-dim); margin-left: .35rem; font-family: var(--font); font-size: .82rem; }
 
+
+  .code-tip {
+    background: rgba(61,156,240,.1);
+    border: 1px solid rgba(61,156,240,.35);
+    border-radius: var(--radius);
+    padding: .85rem 1.1rem;
+    margin-bottom: 1rem;
+    color: var(--fog);
+    font-size: 1rem;
+  }
+
+  .code-tip strong { color: var(--gold-bright); }
+
+  .code-panel {
+    scroll-margin-top: 12px;
+  }
+
   .play-grid {
     display: grid;
     grid-template-columns: minmax(0, 1fr) 320px;
     gap: 1rem;
     align-items: start;
+  }
+
+  .play-grid > .code-panel {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .play-grid > .lesson-details {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  .play-grid > .arena-col {
+    grid-column: 2;
+    grid-row: 1 / span 2;
   }
 
   .grid-2 {
@@ -336,8 +421,19 @@
   }
 
   @media (max-width: 900px) {
-    .play-grid { grid-template-columns: 1fr; }
-    .arena-col { order: -1; }
+    .play-grid {
+      grid-template-columns: 1fr;
+      display: flex;
+      flex-direction: column;
+    }
+    .play-grid > .code-panel { order: 1; }
+    .play-grid > .arena-col {
+      order: 2;
+      grid-column: auto;
+      grid-row: auto;
+      position: static;
+    }
+    .play-grid > .lesson-details { order: 3; }
   }
 
   @media (max-width: 720px) {
@@ -357,23 +453,37 @@
 
   #code-editor {
     width: 100%;
-    min-height: 180px;
+    min-height: 220px;
     background: #0a0e14;
     color: #e6edf3;
-    border: 1px solid var(--cave-border);
+    -webkit-text-fill-color: #e6edf3;
+    opacity: 1;
+    color-scheme: dark;
+    border: 2px solid var(--gold-dim);
     border-radius: 10px;
     padding: .85rem 1rem;
     font-family: var(--mono);
-    font-size: .95rem;
+    font-size: 1rem;
     line-height: 1.55;
     resize: vertical;
     tab-size: 4;
     outline: none;
+    caret-color: #ffd76a;
+  }
+
+  @media (min-width: 901px) {
+    #code-editor { min-height: 280px; }
   }
 
   #code-editor:focus {
-    border-color: var(--gold-dim);
-    box-shadow: 0 0 0 3px rgba(240,193,75,.15);
+    border-color: var(--gold-bright);
+    box-shadow: 0 0 0 3px rgba(240,193,75,.25);
+  }
+
+  #code-editor::placeholder {
+    color: #8b949e;
+    -webkit-text-fill-color: #8b949e;
+    opacity: 1;
   }
 
   #console {
@@ -406,6 +516,30 @@
   .arena-col {
     position: sticky;
     top: 12px;
+  }
+
+  .mobile-code-bar {
+    display: none;
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    margin: 0 0 .75rem;
+    padding: .55rem .75rem;
+    background: rgba(18,24,38,.94);
+    border: 1px solid var(--gold-dim);
+    border-radius: 999px;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    box-shadow: 0 6px 20px rgba(0,0,0,.35);
+  }
+
+  .mobile-code-bar .btn-jump-code {
+    width: 100%;
+    text-align: center;
+  }
+
+  @media (max-width: 900px) {
+    .mobile-code-bar { display: block; }
   }
 
   .arena-panel { padding: 1rem; }
@@ -926,9 +1060,12 @@
 <main id="lesson">
   <div class="topbar">
     <h2><span aria-hidden="true">⚡</span> Level 2 — Power Strike</h2>
-    <div class="status-pill loading" id="py-status" role="status">
-      <span class="dot" aria-hidden="true"></span>
-      <span id="py-status-text">Loading Python…</span>
+    <div class="topbar-actions">
+      <button type="button" class="btn btn-jump-code" id="btn-jump-code" title="Jump to your code editor">✏️ Your code</button>
+      <div class="status-pill loading" id="py-status" role="status">
+        <span class="dot" aria-hidden="true"></span>
+        <span id="py-status-text">Loading Python…</span>
+      </div>
     </div>
   </div>
 
@@ -938,61 +1075,33 @@
     <div class="progress-seg" id="prog-2"></div>
   </div>
 
-  <div class="play-grid">
-    <div class="lesson-col">
-      <section class="panel lesson-text">
-        <h3>📜 Quick Lesson: Numbers &amp; attack math</h3>
-        <p>
-          Attack damage is a <strong>number</strong> — no quotes.
-          You can <strong>subtract</strong> to find remaining HP and
-          <strong>multiply</strong> for a charged strike.
-        </p>
-        <div class="example-box">
-          <span class="comment"># Attack power is a number</span><br>
-          attack = <span class="num">20</span><br>
-          <span class="fn">print</span>(attack)<br>
-          <span class="out">→ 20</span>
-        </div>
-        <div class="example-box">
-          <span class="comment"># Remaining HP = enemy_hp minus damage</span><br>
-          enemy_hp = <span class="num">60</span><br>
-          damage = <span class="num">20</span><br>
-          <span class="fn">print</span>(enemy_hp <span class="op">-</span> damage)<br>
-          <span class="out">→ 40</span>
-        </div>
-        <div class="example-box">
-          <span class="comment"># Charged strike multiplies</span><br>
-          base = <span class="num">15</span><br>
-          charge = <span class="num">2</span><br>
-          <span class="fn">print</span>(base <span class="op">*</span> charge)<br>
-          <span class="out">→ 30</span>
-        </div>
-        <div class="math-row">
-          <div class="math-chip">− <span>subtract</span></div>
-          <div class="math-chip">* <span>multiply</span></div>
-          <div class="math-chip">+ <span>add</span></div>
-        </div>
-        <p style="margin-top:.85rem;">Run your code and watch the training dummy take hits. Real Python. Real damage. ✨</p>
-      </section>
+  <p class="code-tip">
+    <strong>Tip:</strong> Type Python in the big editor below, then tap <strong>Run</strong>.
+    Watch your fighter’s ATK and the dummy’s HP update from your numbers.
+  </p>
 
-      <section class="panel">
-        <div class="grid-2">
-          <div class="editor-wrap">
-            <label for="code-editor">Your Python code</label>
-            <textarea id="code-editor" spellcheck="false" autocomplete="off"
-              placeholder="# Type your Python here…"></textarea>
-            <div class="toolbar">
-              <button type="button" class="btn btn-sea btn-sm" id="btn-run" disabled>▶ Run</button>
-              <button type="button" class="btn btn-ghost btn-sm" id="btn-clear-out">Clear output</button>
-            </div>
-          </div>
-          <div class="console-wrap">
-            <label for="console">Console</label>
-            <div id="console" role="log" aria-live="polite"><span class="muted">Output will appear here…</span></div>
+  <div class="mobile-code-bar">
+    <button type="button" class="btn btn-jump-code" data-jump-code>✏️ Edit code</button>
+  </div>
+
+  <div class="play-grid">
+    <section class="panel code-panel" id="code-panel">
+      <div class="grid-2">
+        <div class="editor-wrap">
+          <label for="code-editor">Your Python code — type here</label>
+          <textarea id="code-editor" spellcheck="false" autocomplete="off" autocapitalize="off" autocorrect="off"
+            placeholder="# Type your Python here…"></textarea>
+          <div class="toolbar">
+            <button type="button" class="btn btn-sea btn-sm" id="btn-run" disabled>▶ Run</button>
+            <button type="button" class="btn btn-ghost btn-sm" id="btn-clear-out">Clear output</button>
           </div>
         </div>
-      </section>
-    </div>
+        <div class="console-wrap">
+          <label for="console">Console</label>
+          <div id="console" role="log" aria-live="polite"><span class="muted">Output will appear here…</span></div>
+        </div>
+      </div>
+    </section>
 
     <aside class="arena-col">
       <section class="panel arena-panel">
@@ -1058,6 +1167,55 @@
         </div>
       </section>
     </aside>
+
+    <section class="panel lesson-text lesson-details">
+      <h3>📜 Quick Lesson: Numbers &amp; attack math</h3>
+      <p>
+        Attack damage is a <strong>number</strong> — no quotes.
+        You can <strong>subtract</strong> to find remaining HP and
+        <strong>multiply</strong> for a charged strike.
+      </p>
+      <div class="example-box" data-code="attack = 20
+print(attack)">
+        <div class="example-code">
+          <span class="comment"># Attack power is a number</span><br>
+          attack = <span class="num">20</span><br>
+          <span class="fn">print</span>(attack)<br>
+          <span class="out">→ 20</span>
+        </div>
+        <button type="button" class="try-example">Try this ▸</button>
+      </div>
+      <div class="example-box" data-code="enemy_hp = 60
+damage = 20
+print(enemy_hp - damage)">
+        <div class="example-code">
+          <span class="comment"># Remaining HP = enemy_hp minus damage</span><br>
+          enemy_hp = <span class="num">60</span><br>
+          damage = <span class="num">20</span><br>
+          <span class="fn">print</span>(enemy_hp <span class="op">-</span> damage)<br>
+          <span class="out">→ 40</span>
+        </div>
+        <button type="button" class="try-example">Try this ▸</button>
+      </div>
+      <div class="example-box" data-code="base = 15
+charge = 2
+print(base * charge)">
+        <div class="example-code">
+          <span class="comment"># Charged strike multiplies</span><br>
+          base = <span class="num">15</span><br>
+          charge = <span class="num">2</span><br>
+          <span class="fn">print</span>(base <span class="op">*</span> charge)<br>
+          <span class="out">→ 30</span>
+        </div>
+        <button type="button" class="try-example">Try this ▸</button>
+      </div>
+      <div class="math-row">
+        <div class="math-chip">− <span>subtract</span></div>
+        <div class="math-chip">* <span>multiply</span></div>
+        <div class="math-chip">+ <span>add</span></div>
+      </div>
+      <p style="margin-top:.85rem;">Run your code and watch the training dummy take hits. Real Python. Real damage. ✨</p>
+    </section>
   </div>
 
   <section class="panel">
@@ -1388,13 +1546,53 @@
     });
   });
 
+
+  function focusCodeEditor() {
+    try {
+      const panel = document.getElementById("code-panel") || editor;
+      panel.scrollIntoView({ behavior: "smooth", block: "start" });
+    } catch (_) {}
+    try {
+      editor.focus({ preventScroll: true });
+    } catch (_) {
+      try { editor.focus(); } catch (_) {}
+    }
+  }
+
+  function loadExampleIntoEditor(code) {
+    if (!code) return;
+    editor.value = code.replace(/\r\n/g, "\n");
+    focusCodeEditor();
+  }
+
+  document.querySelectorAll("#btn-jump-code, [data-jump-code]").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      focusCodeEditor();
+    });
+  });
+
+  document.querySelectorAll(".try-example").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      const box = btn.closest(".example-box");
+      const code = box ? box.getAttribute("data-code") : "";
+      loadExampleIntoEditor(code || "");
+      btn.classList.add("copied");
+      const prev = btn.textContent;
+      btn.textContent = "Loaded ✓";
+      setTimeout(function () {
+        btn.textContent = prev;
+        btn.classList.remove("copied");
+      }, 1200);
+    });
+  });
+
   btnStart.addEventListener("click", function (e) {
     if (e && typeof e.preventDefault === "function") e.preventDefault();
     titleScreen.classList.add("hidden");
     lesson.classList.add("visible");
     try { location.hash = "lesson"; } catch (_) {}
     if (!pyReady && !pyodide) loadPyodideAsync();
-    try { editor.focus(); } catch (_) {}
+    focusCodeEditor();
   });
 
   if (location.hash === "#lesson") {
@@ -1880,7 +2078,7 @@ json.dumps(_out)
 
   paintFighter();
   updateHpBar(DUMMY_MAX, DUMMY_MAX, false);
-  editor.value = '# Challenge 1 starter idea:\n# attack = 20\n# print(attack)\n';
+  editor.value = 'attack = 20\nprint(attack)\n';
 
   loadPyodideAsync();
 })();
