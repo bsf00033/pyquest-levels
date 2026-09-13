@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 160" role="img" aria-label="PyKémon">
+  <defs>
+    <linearGradient id="lg-gold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fff3a0"/>
+      <stop offset="45%" stop-color="#ffd76a"/>
+      <stop offset="100%" stop-color="#c9a227"/>
+    </linearGradient>
+    <linearGradient id="lg-panel" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1c2740"/>
+      <stop offset="100%" stop-color="#0d1424"/>
+    </linearGradient>
+    <linearGradient id="lg-bolt" x1="50%" y1="0%" x2="50%" y2="100%">
+      <stop offset="0%" stop-color="#fffbe6"/>
+      <stop offset="100%" stop-color="#f0c14b"/>
+    </linearGradient>
+    <linearGradient id="lg-fire" x1="50%" y1="0%" x2="50%" y2="100%">
+      <stop offset="0%" stop-color="#ffd166"/>
+      <stop offset="100%" stop-color="#e85d04"/>
+    </linearGradient>
+    <linearGradient id="lg-water" x1="50%" y1="0%" x2="50%" y2="100%">
+      <stop offset="0%" stop-color="#7dd3fc"/>
+      <stop offset="100%" stop-color="#0284c7"/>
+    </linearGradient>
+  </defs>
+
+  <rect x="8" y="18" width="624" height="124" rx="28" fill="url(#lg-panel)" stroke="url(#lg-gold)" stroke-width="4"/>
+  <rect x="18" y="28" width="604" height="104" rx="22" fill="none" stroke="#f0c14b" stroke-opacity=".25" stroke-width="1.5"/>
+
+  <!-- Type gems -->
+  <g transform="translate(46,80)">
+    <polygon points="0,-22 19,-11 19,11 0,22 -19,11 -19,-11" fill="url(#lg-bolt)" stroke="#c9a227" stroke-width="2"/>
+    <path d="M-2 -10 L6 0 H0 L4 12 L-8 -2 H-1 Z" fill="#7a5a00"/>
+  </g>
+  <g transform="translate(594,80)">
+    <polygon points="0,-22 19,-11 19,11 0,22 -19,11 -19,-11" fill="url(#lg-water)" stroke="#0369a1" stroke-width="2"/>
+    <path d="M0 -10 C8 -2 8 6 0 14 C-8 6 -8 -2 0 -10 Z" fill="#e0f2fe"/>
+  </g>
+  <g transform="translate(108,80)">
+    <polygon points="0,-18 16,-9 16,9 0,18 -16,9 -16,-9" fill="url(#lg-fire)" stroke="#c2410c" stroke-width="2"/>
+    <path d="M-2 -8 C-4 -16 6 -16 4 -6 C12 -10 10 4 2 10 C0 4 -6 2 -2 -8 Z" fill="#fff3a0"/>
+  </g>
+  <g transform="translate(532,80)">
+    <polygon points="0,-18 16,-9 16,9 0,18 -16,9 -16,-9" fill="url(#lg-bolt)" stroke="#c9a227" stroke-width="2"/>
+  </g>
+
+  <text x="320" y="98" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="52" font-weight="800" fill="url(#lg-gold)" letter-spacing="4">PyKémon</text>
+  <text x="320" y="122" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="13" font-weight="600" fill="#8b949e" letter-spacing="5">ORIGINAL ARENA</text>
+</svg>

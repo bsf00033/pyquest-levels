@@ -1,0 +1,95 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-label="Sparkybolt, an electric fox companion">
+  <defs>
+    <radialGradient id="sb-glow" cx="50%" cy="48%" r="48%">
+      <stop offset="0%" stop-color="#ffe566" stop-opacity=".55"/>
+      <stop offset="55%" stop-color="#f0c14b" stop-opacity=".12"/>
+      <stop offset="100%" stop-color="#f0c14b" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="sb-body" x1="30%" y1="10%" x2="80%" y2="100%">
+      <stop offset="0%" stop-color="#ffe566"/>
+      <stop offset="45%" stop-color="#ffd24a"/>
+      <stop offset="100%" stop-color="#e6a812"/>
+    </linearGradient>
+    <linearGradient id="sb-belly" x1="50%" y1="0%" x2="50%" y2="100%">
+      <stop offset="0%" stop-color="#fff6d0"/>
+      <stop offset="100%" stop-color="#ffe9a0"/>
+    </linearGradient>
+    <linearGradient id="sb-ear" x1="20%" y1="0%" x2="80%" y2="100%">
+      <stop offset="0%" stop-color="#ffef8a"/>
+      <stop offset="100%" stop-color="#d49210"/>
+    </linearGradient>
+    <linearGradient id="sb-tail" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fff3a0"/>
+      <stop offset="50%" stop-color="#ffd24a"/>
+      <stop offset="100%" stop-color="#f5b400"/>
+    </linearGradient>
+    <linearGradient id="sb-bolt" x1="50%" y1="0%" x2="50%" y2="100%">
+      <stop offset="0%" stop-color="#fffbe6"/>
+      <stop offset="100%" stop-color="#ffcc33"/>
+    </linearGradient>
+    <filter id="sb-soft" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="1.2" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <circle cx="128" cy="128" r="118" fill="url(#sb-glow)"/>
+  <ellipse cx="128" cy="214" rx="62" ry="12" fill="#1a1408" opacity=".35"/>
+
+  <!-- Tail zigzag -->
+  <path d="M168 168 L196 148 L178 146 L214 112 L192 118 L228 78 L200 96 L186 128 L204 132 L170 160 Z"
+        fill="url(#sb-tail)" stroke="#c98a08" stroke-width="2" stroke-linejoin="round"/>
+  <path d="M186 128 L204 108 L194 112 L214 90" fill="none" stroke="#fff8c8" stroke-width="2" stroke-linecap="round" opacity=".7"/>
+
+  <!-- Back ear -->
+  <path d="M148 78 L168 28 L178 86 Z" fill="url(#sb-ear)" stroke="#c98a08" stroke-width="2" stroke-linejoin="round"/>
+  <path d="M156 74 L168 40 L172 80 Z" fill="#ff8a3d"/>
+
+  <!-- Body -->
+  <ellipse cx="122" cy="158" rx="52" ry="46" fill="url(#sb-body)" stroke="#c98a08" stroke-width="2.4"/>
+  <ellipse cx="118" cy="168" rx="32" ry="26" fill="url(#sb-belly)"/>
+
+  <!-- Head -->
+  <ellipse cx="118" cy="108" rx="48" ry="44" fill="url(#sb-body)" stroke="#c98a08" stroke-width="2.4"/>
+
+  <!-- Front ear -->
+  <path d="M86 80 L68 24 L108 78 Z" fill="url(#sb-ear)" stroke="#c98a08" stroke-width="2" stroke-linejoin="round"/>
+  <path d="M88 74 L74 38 L102 74 Z" fill="#ff8a3d"/>
+  <path d="M80 46 L86 60" stroke="#ffe566" stroke-width="2" stroke-linecap="round"/>
+
+  <!-- Forehead bolt -->
+  <path d="M118 78 L128 94 L122 94 L132 112 L116 96 L122 96 Z" fill="url(#sb-bolt)" stroke="#e09a00" stroke-width="1.2" stroke-linejoin="round"/>
+
+  <!-- Cheeks -->
+  <ellipse cx="82" cy="118" rx="10" ry="7" fill="#ffb347" opacity=".85"/>
+  <ellipse cx="154" cy="116" rx="10" ry="7" fill="#ffb347" opacity=".85"/>
+  <path d="M74 114 l4 3 -4 3" fill="none" stroke="#fff4a8" stroke-width="1.4" stroke-linecap="round"/>
+  <path d="M162 112 l-4 3 4 3" fill="none" stroke="#fff4a8" stroke-width="1.4" stroke-linecap="round"/>
+
+  <!-- Eyes -->
+  <ellipse cx="100" cy="108" rx="9" ry="11" fill="#2a1f0a"/>
+  <ellipse cx="136" cy="106" rx="9" ry="11" fill="#2a1f0a"/>
+  <ellipse cx="97" cy="104" rx="3.2" ry="4" fill="#fff"/>
+  <ellipse cx="133" cy="102" rx="3.2" ry="4" fill="#fff"/>
+  <ellipse cx="103" cy="112" rx="1.4" ry="1.6" fill="#fff" opacity=".7"/>
+
+  <!-- Nose + smile -->
+  <ellipse cx="118" cy="122" rx="5" ry="3.6" fill="#5a3a18"/>
+  <ellipse cx="117" cy="121" rx="1.6" ry="1.1" fill="#fff" opacity=".45"/>
+  <path d="M108 130 Q118 138 128 130" fill="none" stroke="#8a5a18" stroke-width="2.2" stroke-linecap="round"/>
+
+  <!-- Paws -->
+  <ellipse cx="98" cy="198" rx="14" ry="10" fill="#f5c43a" stroke="#c98a08" stroke-width="2"/>
+  <ellipse cx="140" cy="198" rx="14" ry="10" fill="#f5c43a" stroke="#c98a08" stroke-width="2"/>
+  <path d="M90 196 q4 6 8 0" fill="none" stroke="#c98a08" stroke-width="1.2"/>
+  <path d="M132 196 q4 6 8 0" fill="none" stroke="#c98a08" stroke-width="1.2"/>
+
+  <!-- Floating sparks -->
+  <g fill="#fff3a0" stroke="#f0c14b" stroke-width="1">
+    <path d="M40 92 l3 8 8-3 -6 6 6 6 -8-2 -4 8 -2-8 -8 1 7-6 -5-7 9 3z" transform="scale(.55) translate(20,40)"/>
+    <path d="M210 60 l2 6 6-2 -4 4 4 5 -6-1 -3 6 -1-6 -6 1 5-4 -4-5 7 2z"/>
+    <circle cx="48" cy="160" r="3" fill="#ffe566" stroke="none"/>
+    <circle cx="208" cy="170" r="2.4" fill="#fff6c0" stroke="none"/>
+    <circle cx="196" cy="48" r="2" fill="#fff" stroke="none"/>
+  </g>
+</svg>

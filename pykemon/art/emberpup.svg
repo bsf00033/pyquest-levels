@@ -1,0 +1,93 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-label="Emberpup, a fire puppy companion">
+  <defs>
+    <radialGradient id="ep-glow" cx="50%" cy="48%" r="48%">
+      <stop offset="0%" stop-color="#ff8a3d" stop-opacity=".5"/>
+      <stop offset="55%" stop-color="#e85d04" stop-opacity=".12"/>
+      <stop offset="100%" stop-color="#e85d04" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="ep-body" x1="25%" y1="8%" x2="80%" y2="100%">
+      <stop offset="0%" stop-color="#ffb347"/>
+      <stop offset="40%" stop-color="#ff7a2f"/>
+      <stop offset="100%" stop-color="#d9480f"/>
+    </linearGradient>
+    <linearGradient id="ep-belly" x1="50%" y1="0%" x2="50%" y2="100%">
+      <stop offset="0%" stop-color="#fff3d6"/>
+      <stop offset="100%" stop-color="#ffd9a0"/>
+    </linearGradient>
+    <linearGradient id="ep-flame" x1="40%" y1="0%" x2="60%" y2="100%">
+      <stop offset="0%" stop-color="#fff3a0"/>
+      <stop offset="35%" stop-color="#ffd166"/>
+      <stop offset="70%" stop-color="#ff6b2d"/>
+      <stop offset="100%" stop-color="#d62828"/>
+    </linearGradient>
+    <linearGradient id="ep-ear" x1="30%" y1="0%" x2="70%" y2="100%">
+      <stop offset="0%" stop-color="#ff9f4a"/>
+      <stop offset="100%" stop-color="#c2410c"/>
+    </linearGradient>
+  </defs>
+
+  <circle cx="128" cy="128" r="118" fill="url(#ep-glow)"/>
+  <ellipse cx="128" cy="216" rx="64" ry="12" fill="#1a0c08" opacity=".35"/>
+
+  <!-- Flame tail -->
+  <path d="M168 168 C196 156 206 128 198 100 C220 118 228 148 214 172 C236 160 242 132 232 108 C250 132 248 168 226 186 C208 200 184 196 168 180 Z"
+        fill="url(#ep-flame)" stroke="#c2410c" stroke-width="2" stroke-linejoin="round"/>
+  <path d="M186 150 C196 138 198 122 192 112 C206 124 208 146 198 160 Z" fill="#fff3a0" opacity=".85"/>
+
+  <!-- Back floppy ear -->
+  <path d="M150 92 C168 78 186 96 184 122 C180 144 158 140 148 120 Z" fill="url(#ep-ear)" stroke="#c2410c" stroke-width="2"/>
+  <path d="M158 104 C168 96 176 108 174 122 C170 132 160 128 156 116 Z" fill="#ffd6a0"/>
+
+  <!-- Body -->
+  <ellipse cx="120" cy="162" rx="56" ry="48" fill="url(#ep-body)" stroke="#c2410c" stroke-width="2.4"/>
+  <ellipse cx="116" cy="172" rx="34" ry="28" fill="url(#ep-belly)"/>
+
+  <!-- Head -->
+  <ellipse cx="116" cy="112" rx="50" ry="46" fill="url(#ep-body)" stroke="#c2410c" stroke-width="2.4"/>
+
+  <!-- Front floppy ear -->
+  <path d="M80 88 C58 78 44 100 50 126 C56 148 80 142 90 118 Z" fill="url(#ep-ear)" stroke="#c2410c" stroke-width="2"/>
+  <path d="M74 100 C62 96 56 110 60 124 C66 134 80 128 82 114 Z" fill="#ffd6a0"/>
+
+  <!-- Head flame tuft -->
+  <path d="M112 70 C108 48 120 36 128 52 C136 34 150 46 140 66 C148 54 138 70 128 72 C120 74 114 70 112 70 Z"
+        fill="url(#ep-flame)" stroke="#c2410c" stroke-width="1.6" stroke-linejoin="round"/>
+  <path d="M124 62 C124 52 130 50 132 58 C130 52 124 60 124 62 Z" fill="#fff6c0"/>
+
+  <!-- Muzzle -->
+  <ellipse cx="116" cy="128" rx="22" ry="16" fill="url(#ep-belly)"/>
+
+  <!-- Cheeks -->
+  <ellipse cx="80" cy="122" rx="11" ry="8" fill="#ff6b6b" opacity=".7"/>
+  <ellipse cx="152" cy="120" rx="11" ry="8" fill="#ff6b6b" opacity=".7"/>
+
+  <!-- Eyes -->
+  <ellipse cx="98" cy="108" rx="9" ry="11" fill="#2a1208"/>
+  <ellipse cx="136" cy="106" rx="9" ry="11" fill="#2a1208"/>
+  <ellipse cx="95" cy="104" rx="3.2" ry="4" fill="#fff"/>
+  <ellipse cx="133" cy="102" rx="3.2" ry="4" fill="#fff"/>
+  <path d="M88 96 Q98 90 106 96" fill="none" stroke="#8a3a10" stroke-width="1.8" stroke-linecap="round"/>
+  <path d="M126 94 Q136 88 144 94" fill="none" stroke="#8a3a10" stroke-width="1.8" stroke-linecap="round"/>
+
+  <!-- Nose + smile -->
+  <ellipse cx="116" cy="126" rx="6" ry="4.2" fill="#4a2010"/>
+  <ellipse cx="115" cy="125" rx="1.8" ry="1.2" fill="#fff" opacity=".4"/>
+  <path d="M104 136 Q116 146 128 136" fill="none" stroke="#8a3a10" stroke-width="2.2" stroke-linecap="round"/>
+  <circle cx="124" cy="140" r="2.2" fill="#ff8a9a" opacity=".55"/>
+
+  <!-- Paws -->
+  <ellipse cx="96" cy="202" rx="16" ry="11" fill="#ff8a3d" stroke="#c2410c" stroke-width="2"/>
+  <ellipse cx="142" cy="202" rx="16" ry="11" fill="#ff8a3d" stroke="#c2410c" stroke-width="2"/>
+  <path d="M88 200 q5 7 10 0 M96 200 q5 7 10 0" fill="none" stroke="#c2410c" stroke-width="1.15"/>
+  <path d="M134 200 q5 7 10 0 M142 200 q5 7 10 0" fill="none" stroke="#c2410c" stroke-width="1.15"/>
+
+  <!-- Embers -->
+  <g>
+    <circle cx="44" cy="88" r="4" fill="#ffd166"/>
+    <circle cx="52" cy="72" r="2.4" fill="#ff8a3d"/>
+    <circle cx="210" cy="70" r="3.2" fill="#ffd166"/>
+    <circle cx="222" cy="92" r="2" fill="#fff3a0"/>
+    <circle cx="40" cy="168" r="2.6" fill="#ff6b2d"/>
+    <path d="M208 48 C206 36 214 32 216 42 C222 32 228 42 220 52 Z" fill="url(#ep-flame)"/>
+  </g>
+</svg>

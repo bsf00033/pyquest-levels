@@ -3,36 +3,62 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>PyQuest — Levels</title>
+<title>PyQuest &amp; PyKémon — Levels</title>
 <style>
   :root {
     --cave: #0d1117; --panel: #161b22; --gold: #f0c14b; --fog: #c9d1d9; --fog-dim: #8b949e;
+    --electric: #ffe566; --ember: #ff8a3d; --sea: #38bdf8;
   }
   * { box-sizing: border-box; }
   body {
     margin: 0; min-height: 100vh; font-family: system-ui, -apple-system, sans-serif;
-    background: radial-gradient(ellipse 80% 50% at 50% -10%, #2a1f0a 0%, transparent 55%), var(--cave);
-    color: var(--fog); padding: 2rem 1.25rem;
+    background:
+      radial-gradient(ellipse 80% 50% at 50% -10%, #2a1f0a 0%, transparent 55%),
+      radial-gradient(ellipse 40% 30% at 90% 80%, #0a1a2e 0%, transparent 50%),
+      var(--cave);
+    color: var(--fog); padding: 2rem 1.25rem 3rem;
   }
-  main { max-width: 420px; margin: 0 auto; }
+  main { max-width: 440px; margin: 0 auto; }
   h1 { color: var(--gold); font-size: 1.75rem; margin: 0 0 .35rem; }
-  p { color: var(--fog-dim); line-height: 1.5; }
+  h2 {
+    color: var(--gold); font-size: 1.35rem; margin: 2rem 0 .35rem;
+    letter-spacing: .02em;
+  }
+  p { color: var(--fog-dim); line-height: 1.5; margin: 0 0 1rem; }
+  section {
+    margin-top: .25rem;
+  }
   a.level {
-    display: block; margin: 1rem 0; padding: 1.1rem 1.25rem; border-radius: 14px;
+    display: block; margin: .75rem 0; padding: 1.1rem 1.25rem; border-radius: 14px;
     background: var(--panel); border: 1px solid #2d3a4f; color: var(--fog);
     text-decoration: none; font-size: 1.1rem; font-weight: 600;
   }
   a.level:active, a.level:hover { border-color: var(--gold); }
   a.level span { display: block; font-weight: 400; font-size: .9rem; color: var(--fog-dim); margin-top: .35rem; }
+  a.level.pk { border-color: #3d3310; }
+  a.level.pk:hover { border-color: var(--electric); }
+  .tag {
+    display: inline-block; font-size: .68rem; font-weight: 700; letter-spacing: .08em;
+    text-transform: uppercase; color: #1a1200; background: var(--gold); padding: .12rem .45rem;
+    border-radius: 999px; margin-left: .4rem; vertical-align: middle;
+  }
 </style>
 </head>
 <body>
 <main>
-  <h1>⚔️ PyQuest</h1>
-  <p>Tap a level to play. Needs internet the first time so Python can load.</p>
-  <a class="level" href="level-01-treasure-chest.html">Level 1 — Treasure Chest<span>Variables &amp; print</span></a>
-  <a class="level" href="level-02-potion-lab.html">Level 2 — Potion Lab<span>Numbers &amp; math</span></a>
-  <a class="level" href="level-03-dragon-gate.html">Level 3 — Dragon Gate<span>if / else / elif</span></a>
+  <section>
+    <h1>⚔️ PyQuest</h1>
+    <p>Tap a level to play. Needs internet the first time so Python can load.</p>
+    <a class="level" href="level-01-treasure-chest.html">Level 1 — Treasure Chest<span>Variables &amp; print</span></a>
+    <a class="level" href="level-02-potion-lab.html">Level 2 — Potion Lab<span>Numbers &amp; math</span></a>
+    <a class="level" href="level-03-dragon-gate.html">Level 3 — Dragon Gate<span>if / else / elif</span></a>
+  </section>
+
+  <section>
+    <h2>⚡ PyKémon</h2>
+    <p>An original kids card-battle. Each lesson adds a game feature. Not Nintendo Pokémon — meet Sparkybolt, Emberpup, and Aquafin.</p>
+    <a class="level pk" href="pykemon/level-01-starter-card.html">Level 1 — Starter Card <span class="tag">New</span><span>Variables: name, hp, ptype · paint a live card</span></a>
+  </section>
 </main>
 </body>
 </html>
