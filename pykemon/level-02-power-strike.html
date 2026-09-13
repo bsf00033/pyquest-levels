@@ -390,6 +390,8 @@
 
   .code-panel {
     scroll-margin-top: 12px;
+    position: relative;
+    z-index: 5;
   }
 
   .play-grid {
@@ -420,7 +422,7 @@
     gap: 1rem;
   }
 
-  @media (max-width: 900px) {
+  @media (max-width: 1100px) {
     .play-grid {
       grid-template-columns: 1fr;
       display: flex;
@@ -431,7 +433,7 @@
       order: 2;
       grid-column: auto;
       grid-row: auto;
-      position: static;
+      position: static !important;
     }
     .play-grid > .lesson-details { order: 3; }
   }
@@ -471,7 +473,7 @@
     caret-color: #ffd76a;
   }
 
-  @media (min-width: 901px) {
+  @media (min-width: 1101px) {
     #code-editor { min-height: 280px; }
   }
 
@@ -518,6 +520,68 @@
     top: 12px;
   }
 
+  .art-drawer {
+    margin: 0;
+    border: none;
+  }
+
+  .art-drawer > summary {
+    list-style: none;
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: .45rem .75rem;
+    padding: .55rem .7rem;
+    margin-bottom: .55rem;
+    background: rgba(18,24,38,.9);
+    border: 1px solid var(--gold-dim);
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: .92rem;
+    color: var(--gold-bright);
+    touch-action: manipulation;
+  }
+
+  .art-drawer > summary::-webkit-details-marker { display: none; }
+  .art-drawer > summary::marker { content: ""; }
+
+  .art-drawer-label-open { display: none; }
+  .art-drawer[open] > summary .art-drawer-label-closed { display: none; }
+  .art-drawer[open] > summary .art-drawer-label-open { display: inline; }
+  .art-drawer[open] > summary .art-compact { display: none; }
+
+  .art-compact {
+    font-size: .82rem;
+    font-weight: 700;
+    color: var(--fog);
+    letter-spacing: .02em;
+    white-space: nowrap;
+  }
+
+  .art-compact .dim { color: var(--fog-dim); font-weight: 600; }
+
+  @media (min-width: 1101px) {
+    .art-drawer > summary { display: none; }
+  }
+
+  @media (max-width: 1100px) {
+    .arena-col {
+      position: static !important;
+      top: auto !important;
+    }
+    .art-drawer[open] .pk-mini-art {
+      height: 120px;
+    }
+    .art-drawer[open] .pk-card img,
+    .art-drawer[open] .pk-mini-art img {
+      max-height: 120px;
+    }
+  }
+
   .mobile-code-bar {
     display: none;
     position: sticky;
@@ -538,7 +602,7 @@
     text-align: center;
   }
 
-  @media (max-width: 900px) {
+  @media (max-width: 1100px) {
     .mobile-code-bar { display: block; }
   }
 
@@ -1106,49 +1170,61 @@
     <aside class="arena-col">
       <section class="panel arena-panel">
         <div class="arena-title">Live training battle</div>
-        <div class="battle-stage" id="battle-stage">
-          <div class="confetti" aria-hidden="true"></div>
+        <details class="art-drawer" id="art-drawer">
+          <summary>
+            <span>
+              <span class="art-drawer-label-closed">🃏 Show cards</span>
+              <span class="art-drawer-label-open">🃏 Hide cards</span>
+            </span>
+            <span class="art-compact" id="art-compact">
+              <span class="dim">ATK</span> <span id="compact-atk">--</span>
+              · <span class="dim">HP</span> <span id="compact-hp">60 / 60</span>
+            </span>
+          </summary>
+          <div class="battle-stage" id="battle-stage">
+            <div class="confetti" aria-hidden="true"></div>
 
-          <div class="fighter">
-            <div class="fighter-label">You</div>
-            <article class="pk-mini" id="player-card" data-type="Electric">
-              <div class="pk-mini-inner">
-                <header class="pk-mini-top">
-                  <div class="atk-badge"><span class="atk-label">ATK</span><span class="atk-val" id="atk-val">--</span></div>
-                  <div class="hp-mini">HP 60</div>
-                </header>
-                <div class="pk-mini-art">
-                  <img id="player-art" src="art/sparkybolt.svg" alt="Sparkybolt" />
+            <div class="fighter">
+              <div class="fighter-label">You</div>
+              <article class="pk-mini" id="player-card" data-type="Electric">
+                <div class="pk-mini-inner">
+                  <header class="pk-mini-top">
+                    <div class="atk-badge"><span class="atk-label">ATK</span><span class="atk-val" id="atk-val">--</span></div>
+                    <div class="hp-mini">HP 60</div>
+                  </header>
+                  <div class="pk-mini-art">
+                    <img id="player-art" src="art/sparkybolt.svg" alt="Sparkybolt" />
+                  </div>
+                  <div class="pk-mini-name" id="player-name">Sparkybolt</div>
                 </div>
-                <div class="pk-mini-name" id="player-name">Sparkybolt</div>
-              </div>
-            </article>
-          </div>
+              </article>
+            </div>
 
-          <div class="vs-badge">VS</div>
+            <div class="vs-badge">VS</div>
 
-          <div class="fighter dummy">
-            <div class="fighter-label">Training dummy</div>
-            <div class="dummy-card" id="dummy-card">
-              <div class="dummy-inner">
-                <div class="dummy-face" id="dummy-face">
-                  🎯
-                  <span class="dmg-float" id="dmg-float"></span>
-                </div>
-                <div class="dummy-name">Practice Bot</div>
-                <div class="hp-bar-wrap" title="Enemy HP">
-                  <div class="hp-bar-fill" id="hp-fill"></div>
-                </div>
-                <div class="hp-bar-text">
-                  <span>HP</span>
-                  <span id="hp-text">60 / 60</span>
+            <div class="fighter dummy">
+              <div class="fighter-label">Training dummy</div>
+              <div class="dummy-card" id="dummy-card">
+                <div class="dummy-inner">
+                  <div class="dummy-face" id="dummy-face">
+                    🎯
+                    <span class="dmg-float" id="dmg-float"></span>
+                  </div>
+                  <div class="dummy-name">Practice Bot</div>
+                  <div class="hp-bar-wrap" title="Enemy HP">
+                    <div class="hp-bar-fill" id="hp-fill"></div>
+                  </div>
+                  <div class="hp-bar-text">
+                    <span>HP</span>
+                    <span id="hp-text">60 / 60</span>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          <div class="battle-log" id="battle-log">Set attack power to begin training.</div>
-        </div>
+            <div class="battle-log" id="battle-log">Set attack power to begin training.</div>
+          </div>
+        </details>
 
         <div class="arena-title" style="margin-top:1rem;">Your fighter</div>
         <div class="starter-picker" id="starter-picker">
@@ -1314,6 +1390,19 @@ print(base * charge)">
   const hpText = document.getElementById("hp-text");
   const battleLog = document.getElementById("battle-log");
   const atkVal = document.getElementById("atk-val");
+  const artDrawer = document.getElementById("art-drawer");
+
+  (function syncArtDrawer() {
+    if (!artDrawer) return;
+    var mq = window.matchMedia("(max-width: 1100px)");
+    function apply() {
+      if (mq.matches) artDrawer.removeAttribute("open");
+      else artDrawer.setAttribute("open", "");
+    }
+    apply();
+    if (mq.addEventListener) mq.addEventListener("change", apply);
+    else if (mq.addListener) mq.addListener(apply);
+  })();
 
   const DUMMY_MAX = 60;
 
@@ -1397,6 +1486,8 @@ print(base * charge)">
     if (pct <= 35) hpFill.classList.add("low");
     else if (pct <= 65) hpFill.classList.add("mid");
     hpText.textContent = cur + " / " + max;
+    var cHp = document.getElementById("compact-hp");
+    if (cHp) cHp.textContent = cur + " / " + max;
     dummyCard.classList.toggle("ko", cur <= 0);
     dummyFace.classList.toggle("woozy", cur < max && cur > 0);
     var face = "🎯";
@@ -1455,9 +1546,13 @@ print(base * charge)">
     if (attack !== null) {
       atkVal.textContent = String(attack);
       battleState.attack = attack;
+      var cAtk = document.getElementById("compact-atk");
+      if (cAtk) cAtk.textContent = String(attack);
     } else if (opts.resetAtk) {
       atkVal.textContent = "--";
       battleState.attack = null;
+      var cAtk2 = document.getElementById("compact-atk");
+      if (cAtk2) cAtk2.textContent = "--";
     }
 
     let remaining = DUMMY_MAX;

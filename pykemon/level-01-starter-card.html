@@ -373,6 +373,8 @@
 
   .code-panel {
     scroll-margin-top: 12px;
+    position: relative;
+    z-index: 5;
   }
 
   .play-grid {
@@ -403,7 +405,7 @@
     gap: 1rem;
   }
 
-  @media (max-width: 900px) {
+  @media (max-width: 1100px) {
     .play-grid {
       grid-template-columns: 1fr;
       display: flex;
@@ -414,7 +416,7 @@
       order: 2;
       grid-column: auto;
       grid-row: auto;
-      position: static;
+      position: static !important;
     }
     .play-grid > .lesson-details { order: 3; }
   }
@@ -454,7 +456,7 @@
     caret-color: #ffd76a;
   }
 
-  @media (min-width: 901px) {
+  @media (min-width: 1101px) {
     #code-editor { min-height: 280px; }
   }
 
@@ -502,6 +504,68 @@
     top: 12px;
   }
 
+  .art-drawer {
+    margin: 0;
+    border: none;
+  }
+
+  .art-drawer > summary {
+    list-style: none;
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: .45rem .75rem;
+    padding: .55rem .7rem;
+    margin-bottom: .55rem;
+    background: rgba(18,24,38,.9);
+    border: 1px solid var(--gold-dim);
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: .92rem;
+    color: var(--gold-bright);
+    touch-action: manipulation;
+  }
+
+  .art-drawer > summary::-webkit-details-marker { display: none; }
+  .art-drawer > summary::marker { content: ""; }
+
+  .art-drawer-label-open { display: none; }
+  .art-drawer[open] > summary .art-drawer-label-closed { display: none; }
+  .art-drawer[open] > summary .art-drawer-label-open { display: inline; }
+  .art-drawer[open] > summary .art-compact { display: none; }
+
+  .art-compact {
+    font-size: .82rem;
+    font-weight: 700;
+    color: var(--fog);
+    letter-spacing: .02em;
+    white-space: nowrap;
+  }
+
+  .art-compact .dim { color: var(--fog-dim); font-weight: 600; }
+
+  @media (min-width: 1101px) {
+    .art-drawer > summary { display: none; }
+  }
+
+  @media (max-width: 1100px) {
+    .arena-col {
+      position: static !important;
+      top: auto !important;
+    }
+    .art-drawer[open] .pk-art-window {
+      height: 120px;
+    }
+    .art-drawer[open] .pk-card img,
+    .art-drawer[open] .pk-art-window img {
+      max-height: 120px;
+    }
+  }
+
   .mobile-code-bar {
     display: none;
     position: sticky;
@@ -522,7 +586,7 @@
     text-align: center;
   }
 
-  @media (max-width: 900px) {
+  @media (max-width: 1100px) {
     .mobile-code-bar { display: block; }
   }
 
@@ -954,22 +1018,34 @@
     <aside class="arena-col">
       <section class="panel arena-panel">
         <div class="arena-title">Live card preview</div>
-        <article class="pk-card" id="preview-card" data-type="">
-          <div class="pk-card-inner">
-            <header class="pk-card-top">
-              <div class="hp-badge"><span class="hp-label">HP</span><span class="hp-val" data-hp>--</span></div>
-              <div class="type-gem" title="Type gem"></div>
-            </header>
-            <div class="pk-art-window">
-              <img data-art alt="" />
-              <div class="pk-art-empty" aria-hidden="true">?</div>
+        <details class="art-drawer" id="art-drawer">
+          <summary>
+            <span>
+              <span class="art-drawer-label-closed">🃏 Show cards</span>
+              <span class="art-drawer-label-open">🃏 Hide cards</span>
+            </span>
+            <span class="art-compact" id="art-compact">
+              <span class="dim">HP</span> <span id="compact-hp">--</span>
+              · <span id="compact-name">???</span>
+            </span>
+          </summary>
+          <article class="pk-card" id="preview-card" data-type="">
+            <div class="pk-card-inner">
+              <header class="pk-card-top">
+                <div class="hp-badge"><span class="hp-label">HP</span><span class="hp-val" data-hp>--</span></div>
+                <div class="type-gem" title="Type gem"></div>
+              </header>
+              <div class="pk-art-window">
+                <img data-art alt="" />
+                <div class="pk-art-empty" aria-hidden="true">?</div>
+              </div>
+              <footer class="pk-nameplate">
+                <div class="pk-name" data-name>???</div>
+                <div class="pk-type-label" data-type-label>Unknown type</div>
+              </footer>
             </div>
-            <footer class="pk-nameplate">
-              <div class="pk-name" data-name>???</div>
-              <div class="pk-type-label" data-type-label>Unknown type</div>
-            </footer>
-          </div>
-        </article>
+          </article>
+        </details>
 
         <div class="arena-title" style="margin-top:1rem;">Pick a starter</div>
         <div class="starter-picker" id="starter-picker">
@@ -1129,6 +1205,19 @@ print(name, "is", ptype)'>
   const recap = document.getElementById("recap");
   const pickTip = document.getElementById("pick-tip");
   const previewCard = document.getElementById("preview-card");
+  const artDrawer = document.getElementById("art-drawer");
+
+  (function syncArtDrawer() {
+    if (!artDrawer) return;
+    var mq = window.matchMedia("(max-width: 1100px)");
+    function apply() {
+      if (mq.matches) artDrawer.removeAttribute("open");
+      else artDrawer.setAttribute("open", "");
+    }
+    apply();
+    if (mq.addEventListener) mq.addEventListener("change", apply);
+    else if (mq.addListener) mq.addListener(apply);
+  })();
 
   let pyodide = null;
   let pyReady = false;
@@ -1224,6 +1313,10 @@ print(name, "is", ptype)'>
     nameEl.textContent = name || "???";
     hpEl.textContent = (hp === 0 || hp) ? String(hp) : "--";
     typeEl.textContent = ptype || "Unknown type";
+    var cHp = document.getElementById("compact-hp");
+    var cName = document.getElementById("compact-name");
+    if (cHp) cHp.textContent = (hp === 0 || hp) ? String(hp) : "--";
+    if (cName) cName.textContent = name || "???";
     card.setAttribute("data-type", ptype);
     card.classList.toggle("ready", !!(name && (hp === 0 || hp) && ptype));
 
