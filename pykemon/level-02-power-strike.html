@@ -1,0 +1,1889 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>PyKémon — Level 2: Power Strike</title>
+<style>
+  :root {
+    --cave-deep: #0b0e14;
+    --cave-mid: #121826;
+    --cave-panel: #1a2233;
+    --cave-border: #2d3a4f;
+    --gold: #f0c14b;
+    --gold-bright: #ffd76a;
+    --gold-dim: #c9a227;
+    --electric: #ffe566;
+    --ember: #ff6b35;
+    --sea: #3d9cf0;
+    --mint: #2ecc71;
+    --rose: #e74c3c;
+    --fog: #c9d1d9;
+    --fog-dim: #8b949e;
+    --shadow: rgba(0,0,0,.5);
+    --radius: 14px;
+    --font: "Segoe UI", system-ui, -apple-system, sans-serif;
+    --mono: "Cascadia Code", "Fira Code", "SF Mono", Consolas, monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    min-height: 100%;
+    background: var(--cave-deep);
+    color: var(--fog);
+    font-family: var(--font);
+    font-size: 17px;
+    line-height: 1.5;
+  }
+
+  body {
+    background:
+      radial-gradient(ellipse 70% 45% at 50% -8%, #2a2208 0%, transparent 55%),
+      radial-gradient(ellipse 50% 40% at 8% 90%, #0a1a2e 0%, transparent 50%),
+      radial-gradient(ellipse 45% 35% at 92% 80%, #2a1008 0%, transparent 45%),
+      var(--cave-deep);
+  }
+
+  #title-screen {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1.25rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  #title-screen.hidden { display: none; }
+
+  .cave-sparkles {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image:
+      radial-gradient(2px 2px at 20% 30%, var(--gold), transparent),
+      radial-gradient(2px 2px at 70% 20%, var(--gold-bright), transparent),
+      radial-gradient(1.5px 1.5px at 40% 70%, #fff8, transparent),
+      radial-gradient(2px 2px at 85% 60%, #7dd3fc, transparent),
+      radial-gradient(1px 1px at 15% 80%, #fff6, transparent),
+      radial-gradient(1.5px 1.5px at 55% 45%, var(--gold-dim), transparent),
+      radial-gradient(2px 2px at 30% 55%, #ff6b35, transparent);
+    animation: twinkle 4s ease-in-out infinite alternate;
+  }
+
+  @keyframes twinkle {
+    from { opacity: .55; }
+    to { opacity: 1; }
+  }
+
+  .title-logo {
+    width: min(92vw, 520px);
+    height: auto;
+    margin-bottom: .6rem;
+    filter: drop-shadow(0 8px 28px rgba(240,193,75,.28));
+    animation: bob 2.8s ease-in-out infinite;
+  }
+
+  @keyframes bob {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+
+  .brand {
+    font-size: .95rem;
+    letter-spacing: .22em;
+    text-transform: uppercase;
+    color: var(--gold-dim);
+    margin-bottom: .35rem;
+  }
+
+  h1 {
+    font-size: clamp(1.8rem, 5vw, 2.6rem);
+    color: var(--gold-bright);
+    text-shadow: 0 0 40px rgba(240,193,75,.25);
+    margin-bottom: 1rem;
+    font-weight: 800;
+  }
+
+  .story {
+    max-width: 34rem;
+    color: var(--fog);
+    font-size: 1.1rem;
+    margin-bottom: 1.75rem;
+    background: rgba(18,24,38,.72);
+    border: 1px solid var(--cave-border);
+    border-radius: var(--radius);
+    padding: 1.15rem 1.35rem;
+    backdrop-filter: blur(6px);
+  }
+
+  .story strong { color: var(--gold); }
+
+  .btn {
+    appearance: none;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    font-weight: 700;
+    font-size: 1.05rem;
+    padding: .85rem 1.6rem;
+    border-radius: 999px;
+    transition: transform .15s, box-shadow .15s, background .15s, opacity .15s;
+    touch-action: manipulation;
+  }
+
+  a.btn {
+    text-decoration: none;
+    display: inline-block;
+    color: inherit;
+  }
+
+  #btn-start { position: relative; z-index: 5; }
+
+  .ipad-tip {
+    max-width: 28rem;
+    margin-top: 1rem;
+    font-size: .88rem;
+    color: var(--fog-dim);
+    line-height: 1.4;
+  }
+
+  .btn:disabled {
+    opacity: .45;
+    cursor: not-allowed;
+    transform: none !important;
+    box-shadow: none !important;
+  }
+
+  .btn:not(:disabled):hover { transform: translateY(-2px); }
+  .btn:not(:disabled):active { transform: translateY(0); }
+
+  .btn-gold {
+    background: linear-gradient(180deg, var(--gold-bright), var(--gold));
+    color: #1a1200;
+    box-shadow: 0 4px 20px rgba(240,193,75,.35);
+  }
+
+  .btn-gold:not(:disabled):hover { box-shadow: 0 6px 28px rgba(240,193,75,.5); }
+
+  .btn-sea {
+    background: linear-gradient(180deg, #5aadf5, var(--sea));
+    color: #041018;
+    box-shadow: 0 4px 16px rgba(61,156,240,.3);
+  }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--fog-dim);
+    border: 1px solid var(--cave-border);
+    font-weight: 600;
+    font-size: .9rem;
+    padding: .5rem 1rem;
+  }
+
+  .btn-ghost:not(:disabled):hover {
+    color: var(--gold);
+    border-color: var(--gold-dim);
+  }
+
+  .btn-check {
+    background: linear-gradient(180deg, #48d68a, var(--mint));
+    color: #041a0c;
+    box-shadow: 0 4px 16px rgba(46,204,113,.3);
+  }
+
+  .btn-sm { font-size: .92rem; padding: .6rem 1.15rem; }
+
+  #lesson {
+    display: none;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 1.25rem 1rem 3rem;
+  }
+
+  #lesson.visible { display: block; }
+  #lesson:target { display: block; }
+  body:has(#lesson:target) #title-screen { display: none; }
+
+  .topbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: .75rem;
+    margin-bottom: 1.25rem;
+    padding-bottom: .9rem;
+    border-bottom: 1px solid var(--cave-border);
+  }
+
+  .topbar h2 {
+    font-size: 1.25rem;
+    color: var(--gold);
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+  }
+
+  .status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    font-size: .82rem;
+    font-weight: 600;
+    padding: .35rem .75rem;
+    border-radius: 999px;
+    background: var(--cave-panel);
+    border: 1px solid var(--cave-border);
+  }
+
+  .status-pill.loading { color: var(--ember); }
+  .status-pill.ready { color: var(--mint); }
+  .status-pill.error { color: var(--rose); }
+
+  .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: currentColor;
+    animation: pulse 1.4s ease-in-out infinite;
+  }
+
+  .status-pill.ready .dot { animation: none; }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: .35; }
+  }
+
+  .panel {
+    background: var(--cave-panel);
+    border: 1px solid var(--cave-border);
+    border-radius: var(--radius);
+    padding: 1.15rem 1.25rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 8px 32px var(--shadow);
+  }
+
+  .panel h3 {
+    color: var(--gold-bright);
+    font-size: 1.1rem;
+    margin-bottom: .65rem;
+    display: flex;
+    align-items: center;
+    gap: .45rem;
+  }
+
+  .lesson-text p { margin-bottom: .65rem; color: var(--fog); }
+  .lesson-text p:last-child { margin-bottom: 0; }
+
+  .example-box {
+    background: var(--cave-deep);
+    border: 1px solid var(--cave-border);
+    border-left: 3px solid var(--gold);
+    border-radius: 8px;
+    padding: .75rem 1rem;
+    margin: .75rem 0;
+    font-family: var(--mono);
+    font-size: .92rem;
+    overflow-x: auto;
+  }
+
+  .example-box .comment { color: var(--fog-dim); }
+  .example-box .kw { color: #c678dd; }
+  .example-box .str { color: #98c379; }
+  .example-box .num { color: #d19a66; }
+  .example-box .fn { color: #61afef; }
+  .example-box .op { color: #56b6c2; }
+  .example-box .out {
+    color: var(--mint);
+    margin-top: .4rem;
+    display: block;
+    font-family: var(--mono);
+  }
+
+  .math-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .55rem;
+    margin: .75rem 0 0;
+  }
+
+  .math-chip {
+    background: var(--cave-deep);
+    border: 1px solid var(--cave-border);
+    border-radius: 999px;
+    padding: .35rem .75rem;
+    font-family: var(--mono);
+    font-size: .88rem;
+    color: var(--gold-bright);
+  }
+
+  .math-chip span { color: var(--fog-dim); margin-left: .35rem; font-family: var(--font); font-size: .82rem; }
+
+  .play-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 320px;
+    gap: 1rem;
+    align-items: start;
+  }
+
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  @media (max-width: 900px) {
+    .play-grid { grid-template-columns: 1fr; }
+    .arena-col { order: -1; }
+  }
+
+  @media (max-width: 720px) {
+    .grid-2 { grid-template-columns: 1fr; }
+  }
+
+  .editor-wrap label,
+  .console-wrap label {
+    display: block;
+    font-size: .8rem;
+    font-weight: 700;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: var(--fog-dim);
+    margin-bottom: .4rem;
+  }
+
+  #code-editor {
+    width: 100%;
+    min-height: 180px;
+    background: #0a0e14;
+    color: #e6edf3;
+    border: 1px solid var(--cave-border);
+    border-radius: 10px;
+    padding: .85rem 1rem;
+    font-family: var(--mono);
+    font-size: .95rem;
+    line-height: 1.55;
+    resize: vertical;
+    tab-size: 4;
+    outline: none;
+  }
+
+  #code-editor:focus {
+    border-color: var(--gold-dim);
+    box-shadow: 0 0 0 3px rgba(240,193,75,.15);
+  }
+
+  #console {
+    width: 100%;
+    min-height: 160px;
+    background: #080b10;
+    color: var(--fog);
+    border: 1px solid var(--cave-border);
+    border-radius: 10px;
+    padding: .85rem 1rem;
+    font-family: var(--mono);
+    font-size: .9rem;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    word-break: break-word;
+    overflow-y: auto;
+  }
+
+  #console .err { color: #ff7b72; }
+  #console .ok { color: var(--mint); }
+  #console .muted { color: var(--fog-dim); }
+
+  .toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem;
+    margin-top: .75rem;
+  }
+
+  .arena-col {
+    position: sticky;
+    top: 12px;
+  }
+
+  .arena-panel { padding: 1rem; }
+
+  .arena-title {
+    font-size: .78rem;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--gold-dim);
+    text-align: center;
+    margin-bottom: .7rem;
+    font-weight: 700;
+  }
+
+  .battle-stage {
+    background:
+      radial-gradient(ellipse at 50% 100%, rgba(240,193,75,.08), transparent 55%),
+      linear-gradient(180deg, #121826, #0a0e14);
+    border: 1px solid var(--cave-border);
+    border-radius: 16px;
+    padding: .85rem .7rem 1rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .battle-stage.victory {
+    box-shadow: 0 0 28px rgba(240,193,75,.35), inset 0 0 40px rgba(46,204,113,.08);
+  }
+
+  .fighter {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: .35rem;
+    margin-bottom: .85rem;
+  }
+
+  .fighter.dummy { margin-bottom: .35rem; }
+
+  .fighter-label {
+    font-size: .68rem;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--fog-dim);
+    font-weight: 700;
+  }
+
+  .pk-mini {
+    --frame: #c9a227;
+    width: 100%;
+    max-width: 210px;
+    border-radius: 16px;
+    padding: 5px;
+    background: linear-gradient(160deg, #fff3a0 0%, var(--gold) 22%, #8a7018 50%, var(--gold-bright) 78%, #c9a227 100%);
+    box-shadow: 0 8px 22px var(--shadow);
+    transition: transform .2s, box-shadow .25s;
+  }
+
+  .pk-mini[data-type="Electric"] { box-shadow: 0 8px 22px var(--shadow), 0 0 18px rgba(255,229,102,.25); }
+  .pk-mini[data-type="Fire"] {
+    background: linear-gradient(160deg, #ffd6a0 0%, #ff8a3d 22%, #8a3010 50%, #ffb347 78%, #c2410c 100%);
+    box-shadow: 0 8px 22px var(--shadow), 0 0 18px rgba(255,107,53,.25);
+  }
+  .pk-mini[data-type="Water"] {
+    background: linear-gradient(160deg, #bae6fd 0%, #38bdf8 22%, #0c4a6e 50%, #7dd3fc 78%, #0369a1 100%);
+    box-shadow: 0 8px 22px var(--shadow), 0 0 18px rgba(56,189,248,.25);
+  }
+
+  .pk-mini.strike {
+    animation: strike-lunge .45s ease;
+  }
+
+  @keyframes strike-lunge {
+    0%, 100% { transform: translateY(0); }
+    40% { transform: translateY(10px) scale(1.04); }
+    55% { transform: translateY(-4px); }
+  }
+
+  .pk-mini-inner {
+    background: #141a28;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,.06);
+  }
+
+  .pk-mini-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: .4rem .5rem .25rem;
+  }
+
+  .atk-badge {
+    display: flex;
+    align-items: baseline;
+    gap: .22rem;
+    background: linear-gradient(180deg, #ffe566, #f0c14b);
+    color: #1a1200;
+    border-radius: 999px;
+    padding: .12rem .5rem .14rem;
+    font-weight: 800;
+    box-shadow: 0 2px 8px rgba(240,193,75,.4);
+    min-width: 3.6rem;
+    justify-content: center;
+  }
+
+  .atk-label { font-size: .58rem; letter-spacing: .06em; }
+  .atk-val { font-size: .95rem; }
+
+  .hp-mini {
+    display: flex;
+    align-items: baseline;
+    gap: .2rem;
+    background: linear-gradient(180deg, #ff6b6b, #c0392b);
+    color: #fff;
+    border-radius: 999px;
+    padding: .12rem .45rem;
+    font-weight: 800;
+    font-size: .78rem;
+  }
+
+  .pk-mini-art {
+    height: 96px;
+    margin: 0 .45rem .4rem;
+    border-radius: 10px;
+    background: linear-gradient(180deg, #1c2740, #0d1320);
+    border: 1px solid #2d3a4f;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .pk-mini-art img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .pk-mini-name {
+    text-align: center;
+    padding: .35rem .4rem .5rem;
+    background: linear-gradient(180deg, #2a2110, #1a1508);
+    border-top: 1px solid var(--gold-dim);
+    font-weight: 800;
+    font-size: .85rem;
+    color: var(--gold-bright);
+    letter-spacing: .04em;
+    text-transform: uppercase;
+  }
+
+  .vs-badge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: .15rem auto .55rem;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--cave-deep);
+    border: 2px solid var(--gold-dim);
+    color: var(--gold);
+    font-weight: 800;
+    font-size: .75rem;
+    letter-spacing: .04em;
+  }
+
+  .dummy-card {
+    width: 100%;
+    max-width: 210px;
+    border-radius: 16px;
+    padding: 5px;
+    background: linear-gradient(160deg, #9ca3af 0%, #6b7280 30%, #374151 55%, #9ca3af 100%);
+    box-shadow: 0 8px 22px var(--shadow);
+    transition: transform .2s, filter .3s;
+    position: relative;
+  }
+
+  .dummy-card.hit {
+    animation: dummy-hit .5s ease;
+  }
+
+  .dummy-card.ko {
+    filter: grayscale(.7) brightness(.75);
+  }
+
+  .dummy-card.flourish {
+    animation: flourish-pulse 1.2s ease;
+  }
+
+  @keyframes dummy-hit {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(8px) rotate(2deg); }
+    40% { transform: translateX(-6px); }
+    60% { transform: translateX(4px); }
+  }
+
+  @keyframes flourish-pulse {
+    0%, 100% { box-shadow: 0 8px 22px var(--shadow); }
+    50% { box-shadow: 0 0 36px rgba(240,193,75,.65), 0 0 12px rgba(46,204,113,.4); transform: scale(1.03); }
+  }
+
+  .dummy-inner {
+    background: #1a1f2a;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,.06);
+    padding: .55rem .6rem .65rem;
+  }
+
+  .dummy-face {
+    height: 88px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    background:
+      radial-gradient(ellipse at 50% 60%, rgba(255,255,255,.06), transparent 55%),
+      #121826;
+    border-radius: 10px;
+    border: 1px solid #2d3a4f;
+    margin-bottom: .5rem;
+    position: relative;
+  }
+
+  .dummy-face.woozy { filter: grayscale(.3); }
+
+  .dmg-float {
+    position: absolute;
+    top: 8px;
+    right: 10px;
+    font-weight: 800;
+    font-size: 1.15rem;
+    color: #ff6b6b;
+    text-shadow: 0 2px 6px rgba(0,0,0,.6);
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .dmg-float.show {
+    animation: float-dmg .9s ease forwards;
+  }
+
+  .dmg-float.charge {
+    color: var(--gold-bright);
+    font-size: 1.35rem;
+  }
+
+  @keyframes float-dmg {
+    0% { opacity: 0; transform: translateY(8px) scale(.8); }
+    20% { opacity: 1; }
+    100% { opacity: 0; transform: translateY(-28px) scale(1.1); }
+  }
+
+  .dummy-name {
+    text-align: center;
+    font-weight: 800;
+    font-size: .88rem;
+    color: var(--fog);
+    letter-spacing: .04em;
+    margin-bottom: .45rem;
+  }
+
+  .hp-bar-wrap {
+    background: #0a0e14;
+    border-radius: 999px;
+    height: 14px;
+    border: 1px solid #2d3a4f;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .hp-bar-fill {
+    height: 100%;
+    width: 100%;
+    background: linear-gradient(90deg, #2ecc71, #48d68a);
+    border-radius: 999px;
+    transition: width .55s ease, background .3s;
+  }
+
+  .hp-bar-fill.mid { background: linear-gradient(90deg, #f0c14b, #ffe566); }
+  .hp-bar-fill.low { background: linear-gradient(90deg, #c0392b, #ff6b6b); }
+
+  .hp-bar-text {
+    display: flex;
+    justify-content: space-between;
+    font-size: .72rem;
+    color: var(--fog-dim);
+    margin-top: .3rem;
+    font-family: var(--mono);
+  }
+
+  .battle-log {
+    margin-top: .65rem;
+    text-align: center;
+    font-size: .82rem;
+    color: var(--fog-dim);
+    min-height: 1.3em;
+  }
+
+  .battle-log.hit { color: var(--ember); font-weight: 600; }
+  .battle-log.win { color: var(--mint); font-weight: 700; }
+
+  .starter-picker {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: .35rem;
+    margin-top: .75rem;
+  }
+
+  .starter-btn {
+    appearance: none;
+    background: #121826;
+    border: 2px solid var(--cave-border);
+    border-radius: 10px;
+    padding: .3rem .2rem .4rem;
+    cursor: pointer;
+    color: var(--fog);
+    font-family: inherit;
+    touch-action: manipulation;
+    min-height: 40px;
+  }
+
+  .starter-btn img {
+    width: 100%;
+    height: 48px;
+    object-fit: contain;
+    display: block;
+    pointer-events: none;
+  }
+
+  .starter-btn strong {
+    display: block;
+    font-size: .62rem;
+    margin-top: .1rem;
+    color: var(--gold-bright);
+  }
+
+  .starter-btn.picked {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 2px rgba(240,193,75,.25);
+    background: #1c2740;
+  }
+
+  .challenge {
+    border: 1px solid var(--cave-border);
+    border-radius: 12px;
+    padding: 1rem 1.1rem;
+    margin-bottom: .85rem;
+    background: rgba(13,17,23,.5);
+    transition: border-color .2s, box-shadow .2s;
+  }
+
+  .challenge.passed {
+    border-color: rgba(46,204,113,.5);
+    box-shadow: 0 0 20px rgba(46,204,113,.08);
+  }
+
+  .challenge-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: .5rem;
+    margin-bottom: .5rem;
+  }
+
+  .challenge-title {
+    font-weight: 700;
+    color: var(--fog);
+    font-size: 1.02rem;
+  }
+
+  .challenge.passed .challenge-title { color: var(--mint); }
+
+  .stars {
+    color: var(--gold);
+    letter-spacing: 2px;
+    font-size: 1.05rem;
+  }
+
+  .stars.empty { color: var(--cave-border); }
+
+  .challenge-desc {
+    color: var(--fog-dim);
+    font-size: .95rem;
+    margin-bottom: .75rem;
+  }
+
+  .challenge-desc code {
+    background: var(--cave-deep);
+    color: var(--gold);
+    padding: .1rem .35rem;
+    border-radius: 4px;
+    font-family: var(--mono);
+    font-size: .88em;
+  }
+
+  .hint-box {
+    display: none;
+    margin-top: .65rem;
+    padding: .65rem .85rem;
+    background: rgba(240,193,75,.08);
+    border: 1px dashed var(--gold-dim);
+    border-radius: 8px;
+    color: var(--gold-bright);
+    font-size: .92rem;
+    white-space: pre-wrap;
+  }
+
+  .hint-box.visible { display: block; }
+
+  .feedback {
+    margin-top: .55rem;
+    font-size: .92rem;
+    font-weight: 600;
+    min-height: 1.3em;
+  }
+
+  .feedback.win { color: var(--mint); }
+  .feedback.try { color: var(--ember); }
+
+  #recap {
+    display: none;
+    text-align: center;
+    border: 2px solid var(--gold);
+    background:
+      radial-gradient(ellipse at 50% 0%, rgba(240,193,75,.12), transparent 60%),
+      var(--cave-panel);
+    animation: glow-in .6s ease;
+  }
+
+  #recap.visible { display: block; }
+
+  @keyframes glow-in {
+    from { opacity: 0; transform: scale(.97); }
+    to { opacity: 1; transform: scale(1); }
+  }
+
+  #recap h3 {
+    font-size: 1.4rem;
+    margin-bottom: .5rem;
+  }
+
+  #recap ul {
+    text-align: left;
+    max-width: 28rem;
+    margin: 1rem auto 0;
+    padding-left: 1.25rem;
+    color: var(--fog);
+  }
+
+  #recap li { margin-bottom: .4rem; }
+
+  .progress-bar {
+    display: flex;
+    gap: .4rem;
+    margin-bottom: 1rem;
+  }
+
+  .progress-seg {
+    flex: 1;
+    height: 6px;
+    border-radius: 3px;
+    background: var(--cave-border);
+    transition: background .3s;
+  }
+
+  .progress-seg.done {
+    background: linear-gradient(90deg, var(--gold-dim), var(--gold-bright));
+  }
+
+  .footer-note {
+    text-align: center;
+    color: var(--fog-dim);
+    font-size: .8rem;
+    margin-top: 1.5rem;
+  }
+
+  .footer-note a { color: var(--gold); }
+
+  .confetti {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0;
+  }
+
+  .battle-stage.victory .confetti {
+    opacity: 1;
+    background-image:
+      radial-gradient(3px 3px at 15% 20%, var(--gold), transparent),
+      radial-gradient(2px 2px at 70% 30%, var(--mint), transparent),
+      radial-gradient(3px 3px at 40% 60%, var(--electric), transparent),
+      radial-gradient(2px 2px at 85% 70%, #ff6b6b, transparent),
+      radial-gradient(2px 2px at 25% 80%, var(--sea), transparent);
+    animation: twinkle 1.2s ease-in-out infinite alternate;
+  }
+</style>
+</head>
+<body>
+
+<section id="title-screen">
+  <div class="cave-sparkles" aria-hidden="true"></div>
+  <img class="title-logo" src="art/logo.svg" alt="PyKémon" />
+  <div class="brand">Original arena · not Nintendo</div>
+  <h1>Level 2: Power Strike</h1>
+  <div class="story">
+    Your starter has a card — now teach them to <strong>hit</strong>!
+    Numbers power every strike: set <strong>attack</strong>, subtract from
+    <strong>enemy_hp</strong>, and multiply for a charged blow.
+    Math in Python = damage in the arena.
+  </div>
+  <a class="btn btn-gold" id="btn-start" href="#lesson">Enter Training ⚡</a>
+  <p class="ipad-tip">On iPad: if this button does nothing, open the lesson from the Safari web link (Files preview often blocks code).</p>
+</section>
+
+<main id="lesson">
+  <div class="topbar">
+    <h2><span aria-hidden="true">⚡</span> Level 2 — Power Strike</h2>
+    <div class="status-pill loading" id="py-status" role="status">
+      <span class="dot" aria-hidden="true"></span>
+      <span id="py-status-text">Loading Python…</span>
+    </div>
+  </div>
+
+  <div class="progress-bar" aria-label="Challenge progress">
+    <div class="progress-seg" id="prog-0"></div>
+    <div class="progress-seg" id="prog-1"></div>
+    <div class="progress-seg" id="prog-2"></div>
+  </div>
+
+  <div class="play-grid">
+    <div class="lesson-col">
+      <section class="panel lesson-text">
+        <h3>📜 Quick Lesson: Numbers &amp; attack math</h3>
+        <p>
+          Attack damage is a <strong>number</strong> — no quotes.
+          You can <strong>subtract</strong> to find remaining HP and
+          <strong>multiply</strong> for a charged strike.
+        </p>
+        <div class="example-box">
+          <span class="comment"># Attack power is a number</span><br>
+          attack = <span class="num">20</span><br>
+          <span class="fn">print</span>(attack)<br>
+          <span class="out">→ 20</span>
+        </div>
+        <div class="example-box">
+          <span class="comment"># Remaining HP = enemy_hp minus damage</span><br>
+          enemy_hp = <span class="num">60</span><br>
+          damage = <span class="num">20</span><br>
+          <span class="fn">print</span>(enemy_hp <span class="op">-</span> damage)<br>
+          <span class="out">→ 40</span>
+        </div>
+        <div class="example-box">
+          <span class="comment"># Charged strike multiplies</span><br>
+          base = <span class="num">15</span><br>
+          charge = <span class="num">2</span><br>
+          <span class="fn">print</span>(base <span class="op">*</span> charge)<br>
+          <span class="out">→ 30</span>
+        </div>
+        <div class="math-row">
+          <div class="math-chip">− <span>subtract</span></div>
+          <div class="math-chip">* <span>multiply</span></div>
+          <div class="math-chip">+ <span>add</span></div>
+        </div>
+        <p style="margin-top:.85rem;">Run your code and watch the training dummy take hits. Real Python. Real damage. ✨</p>
+      </section>
+
+      <section class="panel">
+        <div class="grid-2">
+          <div class="editor-wrap">
+            <label for="code-editor">Your Python code</label>
+            <textarea id="code-editor" spellcheck="false" autocomplete="off"
+              placeholder="# Type your Python here…"></textarea>
+            <div class="toolbar">
+              <button type="button" class="btn btn-sea btn-sm" id="btn-run" disabled>▶ Run</button>
+              <button type="button" class="btn btn-ghost btn-sm" id="btn-clear-out">Clear output</button>
+            </div>
+          </div>
+          <div class="console-wrap">
+            <label for="console">Console</label>
+            <div id="console" role="log" aria-live="polite"><span class="muted">Output will appear here…</span></div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <aside class="arena-col">
+      <section class="panel arena-panel">
+        <div class="arena-title">Live training battle</div>
+        <div class="battle-stage" id="battle-stage">
+          <div class="confetti" aria-hidden="true"></div>
+
+          <div class="fighter">
+            <div class="fighter-label">You</div>
+            <article class="pk-mini" id="player-card" data-type="Electric">
+              <div class="pk-mini-inner">
+                <header class="pk-mini-top">
+                  <div class="atk-badge"><span class="atk-label">ATK</span><span class="atk-val" id="atk-val">--</span></div>
+                  <div class="hp-mini">HP 60</div>
+                </header>
+                <div class="pk-mini-art">
+                  <img id="player-art" src="art/sparkybolt.svg" alt="Sparkybolt" />
+                </div>
+                <div class="pk-mini-name" id="player-name">Sparkybolt</div>
+              </div>
+            </article>
+          </div>
+
+          <div class="vs-badge">VS</div>
+
+          <div class="fighter dummy">
+            <div class="fighter-label">Training dummy</div>
+            <div class="dummy-card" id="dummy-card">
+              <div class="dummy-inner">
+                <div class="dummy-face" id="dummy-face">
+                  🎯
+                  <span class="dmg-float" id="dmg-float"></span>
+                </div>
+                <div class="dummy-name">Practice Bot</div>
+                <div class="hp-bar-wrap" title="Enemy HP">
+                  <div class="hp-bar-fill" id="hp-fill"></div>
+                </div>
+                <div class="hp-bar-text">
+                  <span>HP</span>
+                  <span id="hp-text">60 / 60</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="battle-log" id="battle-log">Set attack power to begin training.</div>
+        </div>
+
+        <div class="arena-title" style="margin-top:1rem;">Your fighter</div>
+        <div class="starter-picker" id="starter-picker">
+          <button type="button" class="starter-btn picked" data-starter="Sparkybolt" data-ptype="Electric" data-art="art/sparkybolt.svg">
+            <img src="art/sparkybolt.svg" alt="" />
+            <strong>Sparkybolt</strong>
+          </button>
+          <button type="button" class="starter-btn" data-starter="Emberpup" data-ptype="Fire" data-art="art/emberpup.svg">
+            <img src="art/emberpup.svg" alt="" />
+            <strong>Emberpup</strong>
+          </button>
+          <button type="button" class="starter-btn" data-starter="Aquafin" data-ptype="Water" data-art="art/aquafin.svg">
+            <img src="art/aquafin.svg" alt="" />
+            <strong>Aquafin</strong>
+          </button>
+        </div>
+      </section>
+    </aside>
+  </div>
+
+  <section class="panel">
+    <h3>⚔️ Challenges</h3>
+    <p style="color:var(--fog-dim);margin-bottom:1rem;font-size:.95rem;">
+      Write code in the editor, hit <strong>Run</strong> to update the battle, then <strong>Check</strong> each challenge.
+      Keep adding lines — you can reuse the same code as you go.
+    </p>
+
+    <div class="challenge" id="ch-0" data-challenge="0">
+      <div class="challenge-header">
+        <div class="challenge-title"><span class="stars empty" id="stars-0">☆</span> Challenge 1 — Set attack power</div>
+      </div>
+      <p class="challenge-desc">
+        Create <code>attack = 20</code> (the number twenty, no quotes) and
+        <code>print(attack)</code>. Your card’s ATK badge will light up!
+      </p>
+      <div class="toolbar">
+        <button type="button" class="btn btn-check btn-sm" data-check="0" disabled>Check</button>
+        <button type="button" class="btn btn-ghost btn-sm" data-hint="0">Hint</button>
+      </div>
+      <div class="hint-box" id="hint-0"></div>
+      <div class="feedback" id="fb-0"></div>
+    </div>
+
+    <div class="challenge" id="ch-1" data-challenge="1">
+      <div class="challenge-header">
+        <div class="challenge-title"><span class="stars empty" id="stars-1">☆</span> Challenge 2 — Deal damage</div>
+      </div>
+      <p class="challenge-desc">
+        Create <code>enemy_hp = 60</code> and <code>damage = 20</code>, then print the remaining HP with
+        subtraction: <code>print(enemy_hp - damage)</code> → console shows <strong>40</strong>.
+        You must use the <code>-</code> operator (printing 40 alone won’t pass). Watch the dummy’s HP bar drop!
+      </p>
+      <div class="toolbar">
+        <button type="button" class="btn btn-check btn-sm" data-check="1" disabled>Check</button>
+        <button type="button" class="btn btn-ghost btn-sm" data-hint="1">Hint</button>
+      </div>
+      <div class="hint-box" id="hint-1"></div>
+      <div class="feedback" id="fb-1"></div>
+    </div>
+
+    <div class="challenge" id="ch-2" data-challenge="2">
+      <div class="challenge-header">
+        <div class="challenge-title"><span class="stars empty" id="stars-2">☆</span> Challenge 3 — Charged strike</div>
+      </div>
+      <p class="challenge-desc">
+        Create <code>base = 15</code> and <code>charge = 2</code>, then print a charged hit:
+        <code>print(base * charge)</code> → <strong>30</strong>.
+        Require the <code>*</code> operator — that’s a Power Strike!
+      </p>
+      <div class="toolbar">
+        <button type="button" class="btn btn-check btn-sm" data-check="2" disabled>Check</button>
+        <button type="button" class="btn btn-ghost btn-sm" data-hint="2">Hint</button>
+      </div>
+      <div class="hint-box" id="hint-2"></div>
+      <div class="feedback" id="fb-2"></div>
+    </div>
+  </section>
+
+  <section class="panel" id="recap">
+    <h3>⭐ Power Strike learned!</h3>
+    <p style="font-size:1.15rem;color:var(--gold-bright);">The training dummy is toast — your math hits hard!</p>
+    <p style="margin-top:.5rem;color:var(--fog);">What you learned:</p>
+    <ul>
+      <li><strong>attack</strong> / <strong>damage</strong> are numbers — they power every strike.</li>
+      <li><strong>−</strong> subtracts: <code style="color:var(--gold)">enemy_hp - damage</code> finds remaining HP.</li>
+      <li><strong>*</strong> multiplies: <code style="color:var(--gold)">base * charge</code> doubles a charged hit.</li>
+    </ul>
+    <p style="margin-top:1.25rem;font-size:1.05rem;">Level 3 will add <strong>type matchups</strong>. Rest up, trainer! ⚡</p>
+  </section>
+
+  <p class="footer-note"><a href="../index.html">← PyQuest &amp; PyKémon hub</a> · Real Python in your browser via Pyodide · No account needed</p>
+</main>
+
+<script>
+(function () {
+  "use strict";
+
+  const titleScreen = document.getElementById("title-screen");
+  const lesson = document.getElementById("lesson");
+  const btnStart = document.getElementById("btn-start");
+  const btnRun = document.getElementById("btn-run");
+  const btnClearOut = document.getElementById("btn-clear-out");
+  const editor = document.getElementById("code-editor");
+  const consoleEl = document.getElementById("console");
+  const pyStatus = document.getElementById("py-status");
+  const pyStatusText = document.getElementById("py-status-text");
+  const recap = document.getElementById("recap");
+  const battleStage = document.getElementById("battle-stage");
+  const playerCard = document.getElementById("player-card");
+  const dummyCard = document.getElementById("dummy-card");
+  const dummyFace = document.getElementById("dummy-face");
+  const dmgFloat = document.getElementById("dmg-float");
+  const hpFill = document.getElementById("hp-fill");
+  const hpText = document.getElementById("hp-text");
+  const battleLog = document.getElementById("battle-log");
+  const atkVal = document.getElementById("atk-val");
+
+  const DUMMY_MAX = 60;
+
+  let pyodide = null;
+  let pyReady = false;
+  let pyLoading = null;
+  const passed = [false, false, false];
+  const hintIndex = [0, 0, 0];
+  let pickedStarter = {
+    name: "Sparkybolt",
+    ptype: "Electric",
+    art: "art/sparkybolt.svg"
+  };
+  let battleState = {
+    attack: null,
+    enemyHp: DUMMY_MAX,
+    lastDamage: 0,
+    charged: false
+  };
+
+  const HINTS = [
+    [
+      "Numbers don’t need quotes: attack = 20",
+      "Print the variable: print(attack) — not just the number 20 by itself.",
+      "Both lines matter — create attack, then print(attack)."
+    ],
+    [
+      "Set both boxes: enemy_hp = 60 and damage = 20",
+      "Subtract with a minus sign: print(enemy_hp - damage)",
+      "Printing 40 alone won’t pass — the - must appear in your code!"
+    ],
+    [
+      "base = 15 and charge = 2 (numbers, no quotes).",
+      "Multiply with *: print(base * charge)",
+      "The * must appear in your source — printing 30 alone won’t pass."
+    ]
+  ];
+
+  const WIN_MESSAGES = [
+    "Attack power locked! ATK badge glows. ⭐",
+    "Hit landed! Dummy HP drops to 40. ⭐⭐",
+    "Charged strike! Power Strike unlocked! ⭐⭐⭐"
+  ];
+
+  const WIPE_VARS = [
+    "attack", "damage", "enemy_hp", "base", "charge",
+    "hp", "name", "ptype", "atk", "power", "remaining"
+  ];
+
+  const INSPECT_NAMES = [
+    "attack", "damage", "enemy_hp", "base", "charge"
+  ];
+
+  function setConsole(html) {
+    consoleEl.innerHTML = html;
+  }
+
+  function setStatus(state, text) {
+    pyStatus.className = "status-pill " + state;
+    pyStatusText.textContent = text;
+  }
+
+  function setButtonsEnabled(on) {
+    btnRun.disabled = !on;
+    document.querySelectorAll("[data-check]").forEach(function (b) {
+      b.disabled = !on;
+    });
+  }
+
+  function setBattleLog(text, cls) {
+    battleLog.className = "battle-log" + (cls ? " " + cls : "");
+    battleLog.textContent = text;
+  }
+
+  function updateHpBar(current, maxHp, animate) {
+    const max = maxHp || DUMMY_MAX;
+    const cur = Math.max(0, Math.min(max, Number(current)));
+    const pct = (cur / max) * 100;
+    hpFill.style.width = pct + "%";
+    hpFill.classList.remove("mid", "low");
+    if (pct <= 35) hpFill.classList.add("low");
+    else if (pct <= 65) hpFill.classList.add("mid");
+    hpText.textContent = cur + " / " + max;
+    dummyCard.classList.toggle("ko", cur <= 0);
+    dummyFace.classList.toggle("woozy", cur < max && cur > 0);
+    var face = "🎯";
+    if (cur <= 0) face = "💥";
+    else if (cur < max) face = "😵";
+    dummyFace.innerHTML = face + '<span class="dmg-float" id="dmg-float"></span>';
+  }
+
+  function showDamageFloat(amount, charged) {
+    const el = document.getElementById("dmg-float") || dmgFloat;
+    if (!el) return;
+    el.textContent = "-" + amount;
+    el.className = "dmg-float show" + (charged ? " charge" : "");
+    dummyCard.classList.remove("hit");
+    void dummyCard.offsetWidth;
+    dummyCard.classList.add("hit");
+    playerCard.classList.remove("strike");
+    void playerCard.offsetWidth;
+    playerCard.classList.add("strike");
+    setTimeout(function () {
+      el.classList.remove("show", "charge");
+    }, 900);
+  }
+
+  function paintFighter() {
+    document.getElementById("player-name").textContent = pickedStarter.name;
+    document.getElementById("player-art").src = pickedStarter.art;
+    document.getElementById("player-art").alt = pickedStarter.name;
+    playerCard.setAttribute("data-type", pickedStarter.ptype);
+  }
+
+  function updateBattleFromVars(vars, opts) {
+    opts = opts || {};
+    let attack = null;
+    let enemyHp = null;
+    let damage = null;
+    let base = null;
+    let charge = null;
+
+    if (vars && vars.attack && vars.attack.exists && isNumberType(vars.attack.type)) {
+      attack = Number(vars.attack.value);
+    }
+    if (vars && vars.enemy_hp && vars.enemy_hp.exists && isNumberType(vars.enemy_hp.type)) {
+      enemyHp = Number(vars.enemy_hp.value);
+    }
+    if (vars && vars.damage && vars.damage.exists && isNumberType(vars.damage.type)) {
+      damage = Number(vars.damage.value);
+    }
+    if (vars && vars.base && vars.base.exists && isNumberType(vars.base.type)) {
+      base = Number(vars.base.value);
+    }
+    if (vars && vars.charge && vars.charge.exists && isNumberType(vars.charge.type)) {
+      charge = Number(vars.charge.value);
+    }
+
+    if (attack !== null) {
+      atkVal.textContent = String(attack);
+      battleState.attack = attack;
+    } else if (opts.resetAtk) {
+      atkVal.textContent = "--";
+      battleState.attack = null;
+    }
+
+    let remaining = DUMMY_MAX;
+    let dealt = 0;
+    let charged = false;
+
+    if (enemyHp !== null && damage !== null) {
+      remaining = enemyHp - damage;
+      dealt = damage;
+    } else if (enemyHp !== null && attack !== null && damage === null) {
+      remaining = enemyHp - attack;
+      dealt = attack;
+    } else if (opts.forceRemaining != null) {
+      remaining = opts.forceRemaining;
+      dealt = opts.forceDamage || 0;
+      charged = !!opts.charged;
+    } else if (base !== null && charge !== null && opts.showCharge) {
+      dealt = base * charge;
+      remaining = Math.max(0, DUMMY_MAX - dealt);
+      charged = true;
+    } else if (attack !== null && opts.fromRun) {
+      // show attack ready but keep full HP until damage math exists
+      remaining = battleState.enemyHp < DUMMY_MAX && (enemyHp !== null || damage !== null)
+        ? battleState.enemyHp
+        : DUMMY_MAX;
+    }
+
+    if (enemyHp !== null && damage !== null) {
+      battleState.enemyHp = remaining;
+      battleState.lastDamage = dealt;
+      updateHpBar(remaining, enemyHp > 0 ? enemyHp : DUMMY_MAX, true);
+      if (dealt > 0 && !opts.skipAnim) {
+        showDamageFloat(dealt, false);
+        setBattleLog("Hit! " + dealt + " damage — dummy has " + remaining + " HP left.", "hit");
+      }
+    } else if (opts.forceRemaining != null) {
+      battleState.enemyHp = remaining;
+      battleState.lastDamage = dealt;
+      updateHpBar(remaining, DUMMY_MAX, true);
+      if (dealt > 0 && !opts.skipAnim) {
+        showDamageFloat(dealt, charged);
+        setBattleLog(
+          charged
+            ? "Charged Power Strike for " + dealt + "!"
+            : "Hit! " + dealt + " damage.",
+          charged ? "win" : "hit"
+        );
+      }
+    } else if (attack !== null) {
+      setBattleLog("Attack power " + attack + " ready. Subtract damage next!", "");
+    }
+  }
+
+  function victoryFlourish() {
+    battleStage.classList.add("victory");
+    dummyCard.classList.remove("flourish");
+    void dummyCard.offsetWidth;
+    dummyCard.classList.add("flourish");
+    updateHpBar(0, DUMMY_MAX, true);
+    dummyFace.innerHTML = '💫<span class="dmg-float" id="dmg-float"></span>';
+    showDamageFloat(30, true);
+    setBattleLog("Power Strike learned! Practice Bot is out! ⭐", "win");
+  }
+
+  function updateProgress() {
+    for (let i = 0; i < 3; i++) {
+      document.getElementById("prog-" + i).classList.toggle("done", passed[i]);
+    }
+    if (passed.every(Boolean)) {
+      victoryFlourish();
+      recap.classList.add("visible");
+      recap.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+  }
+
+  document.querySelectorAll(".starter-btn").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      document.querySelectorAll(".starter-btn").forEach(function (b) { b.classList.remove("picked"); });
+      btn.classList.add("picked");
+      pickedStarter = {
+        name: btn.getAttribute("data-starter"),
+        ptype: btn.getAttribute("data-ptype"),
+        art: btn.getAttribute("data-art")
+      };
+      paintFighter();
+    });
+  });
+
+  btnStart.addEventListener("click", function (e) {
+    if (e && typeof e.preventDefault === "function") e.preventDefault();
+    titleScreen.classList.add("hidden");
+    lesson.classList.add("visible");
+    try { location.hash = "lesson"; } catch (_) {}
+    if (!pyReady && !pyodide) loadPyodideAsync();
+    try { editor.focus(); } catch (_) {}
+  });
+
+  if (location.hash === "#lesson") {
+    titleScreen.classList.add("hidden");
+    lesson.classList.add("visible");
+    if (!pyReady && !pyodide) loadPyodideAsync();
+  }
+
+  btnClearOut.addEventListener("click", function () {
+    setConsole('<span class="muted">Output cleared.</span>');
+  });
+
+  editor.addEventListener("keydown", function (e) {
+    if (e.key === "Tab") {
+      e.preventDefault();
+      const start = editor.selectionStart;
+      const end = editor.selectionEnd;
+      editor.value = editor.value.slice(0, start) + "    " + editor.value.slice(end);
+      editor.selectionStart = editor.selectionEnd = start + 4;
+    }
+  });
+
+  document.querySelectorAll("[data-hint]").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      const i = Number(btn.getAttribute("data-hint"));
+      const box = document.getElementById("hint-" + i);
+      const tips = HINTS[i];
+      const idx = hintIndex[i];
+      if (idx >= tips.length) {
+        box.textContent = "You’ve seen every hint for this one. You’ve got this — try again!";
+        box.classList.add("visible");
+        return;
+      }
+      box.textContent = "💡 Tip " + (idx + 1) + ": " + tips[idx];
+      box.classList.add("visible");
+      hintIndex[i] = idx + 1;
+      if (hintIndex[i] >= tips.length) {
+        btn.textContent = "Hints done";
+      } else {
+        btn.textContent = "Another hint";
+      }
+    });
+  });
+
+  document.querySelectorAll("[data-check]").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      const i = Number(btn.getAttribute("data-check"));
+      checkChallenge(i);
+    });
+  });
+
+  btnRun.addEventListener("click", function () {
+    runUserCode();
+  });
+
+  async function loadPyodideAsync() {
+    if (pyReady) return;
+    if (pyLoading) return pyLoading;
+    setStatus("loading", "Loading Python…");
+    setButtonsEnabled(false);
+    pyLoading = (async function () {
+      try {
+        if (typeof loadPyodide !== "function") {
+          await new Promise(function (resolve, reject) {
+            const s = document.createElement("script");
+            s.src = "https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js";
+            s.onload = resolve;
+            s.onerror = function () {
+              reject(new Error("Could not load Pyodide script from CDN."));
+            };
+            document.head.appendChild(s);
+          });
+        }
+        pyodide = await loadPyodide({
+          indexURL: "https://cdn.jsdelivr.net/pyodide/v0.26.4/full/"
+        });
+        pyReady = true;
+        setStatus("ready", "Python ready");
+        setButtonsEnabled(true);
+        setConsole('<span class="ok">Python is ready. Type code and hit Run to train your strike!</span>');
+      } catch (err) {
+        pyLoading = null;
+        setStatus("error", "Load failed");
+        setConsole(
+          '<span class="err">Couldn’t load Python. Check your internet connection and refresh the page.\n\n' +
+          escapeHtml(String(err.message || err)) + "</span>"
+        );
+      }
+    })();
+    return pyLoading;
+  }
+
+  function escapeHtml(s) {
+    return String(s)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
+
+  async function executeCode(code, inspectNames) {
+    if (!pyReady || !pyodide) {
+      throw new Error("Python is still loading.");
+    }
+
+    await pyodide.runPythonAsync(`
+import sys
+from io import StringIO
+_pyquest_stdout = StringIO()
+_pyquest_stderr = StringIO()
+sys.stdout = _pyquest_stdout
+sys.stderr = _pyquest_stderr
+`);
+
+    await pyodide.runPythonAsync(`
+import builtins
+for _b in ("print", "input", "int", "float", "str", "len", "sum", "list", "dict", "range", "type", "abs", "min", "max", "round", "bool", "open"):
+    globals()[_b] = getattr(builtins, _b)
+`);
+
+    await pyodide.runPythonAsync(`
+for _n in ${JSON.stringify(WIPE_VARS)}:
+    globals().pop(_n, None)
+`);
+
+    let runError = null;
+    try {
+      await pyodide.runPythonAsync(code);
+    } catch (e) {
+      runError = e;
+    }
+
+    const stdout = await pyodide.runPythonAsync("_pyquest_stdout.getvalue()");
+    const stderr = await pyodide.runPythonAsync("_pyquest_stderr.getvalue()");
+
+    await pyodide.runPythonAsync("sys.stdout = sys.__stdout__; sys.stderr = sys.__stderr__");
+
+    const vars = {};
+    if (inspectNames && inspectNames.length) {
+      const blob = await pyodide.runPythonAsync(`
+import json
+_names = ${JSON.stringify(inspectNames)}
+_out = {}
+for _n in _names:
+    if _n in globals():
+        _v = globals()[_n]
+        _t = type(_v).__name__
+        if _t == "str":
+            _out[_n] = {"exists": True, "type": _t, "value": _v}
+        elif _t in ("int", "float", "bool"):
+            _out[_n] = {"exists": True, "type": _t, "value": _v}
+        else:
+            _out[_n] = {"exists": True, "type": _t, "value": str(_v)}
+    else:
+        _out[_n] = {"exists": False}
+json.dumps(_out)
+`);
+      Object.assign(vars, JSON.parse(blob));
+    }
+
+    const usedPrint = /\bprint\s*\(/.test(code);
+
+    return {
+      ok: !runError,
+      error: runError,
+      stdout: String(stdout || ""),
+      stderr: String(stderr || ""),
+      vars: vars,
+      usedPrint: usedPrint,
+      code: code
+    };
+  }
+
+  function looksLikeSameFailure(blob, errMsg) {
+    const a = String(blob || "");
+    const b = String(errMsg || "");
+    if (!a.trim()) return false;
+    if (/Traceback \(most recent call last\)/i.test(a)) return true;
+    const pick = (s) => {
+      const m = s.match(/(TypeError|NameError|SyntaxError|ValueError|AttributeError|IndexError|KeyError|ZeroDivisionError|IndentationError)[^\n]*/);
+      return m ? m[0] : "";
+    };
+    const ea = pick(a);
+    const eb = pick(b);
+    return !!(ea && eb && ea === eb);
+  }
+
+  function formatRunConsole(result) {
+    let html = "";
+    const errMsg = result.error ? (result.error.message || String(result.error)) : "";
+    if (result.error) {
+      if (result.stdout) {
+        const out = String(result.stdout);
+        if (!looksLikeSameFailure(out, errMsg)) {
+          html += escapeHtml(out);
+        }
+      }
+      if (result.stderr) {
+        const err = String(result.stderr).trim();
+        if (err && err.length < 400 && !looksLikeSameFailure(err, errMsg)) {
+          html += (html ? "\n" : "") + '<span class="err">' + escapeHtml(result.stderr) + "</span>";
+        }
+      }
+      html += (html ? "\n" : "") +
+        '<span class="err">Python says:\n' + escapeHtml(friendlyError(errMsg)) + "</span>";
+      return html;
+    }
+    if (result.stdout) {
+      html += escapeHtml(result.stdout);
+    }
+    if (result.stderr) {
+      html += (html ? "\n" : "") + '<span class="err">' + escapeHtml(result.stderr) + "</span>";
+    }
+    return html;
+  }
+
+  async function runUserCode() {
+    const code = editor.value;
+    if (!code.trim()) {
+      setConsole('<span class="muted">Nothing to run — type some Python first!</span>');
+      return;
+    }
+    setConsole('<span class="muted">Running…</span>');
+    try {
+      const result = await executeCode(code, INSPECT_NAMES);
+      let html = formatRunConsole(result);
+      if (!html) {
+        html = '<span class="muted">(Ran successfully — nothing was printed. Try print(…)!)</span>';
+      }
+      setConsole(html);
+      if (result.ok) {
+        // Reset dummy HP display baseline then apply vars
+        if (!(result.vars.enemy_hp && result.vars.enemy_hp.exists &&
+              result.vars.damage && result.vars.damage.exists)) {
+          if (!(result.vars.base && result.vars.base.exists &&
+                result.vars.charge && result.vars.charge.exists &&
+                hasOperatorOutsideStrings(code, "*"))) {
+            updateHpBar(DUMMY_MAX, DUMMY_MAX, false);
+            battleState.enemyHp = DUMMY_MAX;
+          }
+        }
+        updateBattleFromVars(result.vars, { fromRun: true, showCharge: true });
+        // If charged strike vars present with *, preview charged damage on dummy
+        const v = result.vars;
+        if (v.base && v.base.exists && isNumberType(v.base.type) &&
+            v.charge && v.charge.exists && isNumberType(v.charge.type) &&
+            hasOperatorOutsideStrings(code, "*") &&
+            !(v.enemy_hp && v.enemy_hp.exists && v.damage && v.damage.exists)) {
+          const dealt = Number(v.base.value) * Number(v.charge.value);
+          updateBattleFromVars(v, {
+            forceRemaining: Math.max(0, DUMMY_MAX - dealt),
+            forceDamage: dealt,
+            charged: true,
+            showCharge: true
+          });
+        }
+      }
+    } catch (err) {
+      setConsole('<span class="err">Python says: ' + escapeHtml(String(err.message || err)) + "</span>");
+    }
+  }
+
+  function friendlyError(msg) {
+    const text = String(msg || "");
+    const lines = text.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
+    const errRe = /^(TypeError|NameError|SyntaxError|ValueError|AttributeError|IndexError|KeyError|ZeroDivisionError|IndentationError|TabError|UnboundLocalError|OverflowError|RuntimeError|RecursionError|ModuleNotFoundError|ImportError|AssertionError|OSError|MemoryError):\s*/;
+    let last = "";
+    for (let i = lines.length - 1; i >= 0; i--) {
+      const line = lines[i];
+      if (errRe.test(line)) {
+        last = line;
+        break;
+      }
+    }
+    if (!last) {
+      for (let i = lines.length - 1; i >= 0; i--) {
+        const line = lines[i];
+        if (/^Traceback\b|^File\s+"|^\s*at\s+|PythonError:\s*$/i.test(line)) continue;
+        last = line.replace(/^PythonError:\s*/i, "");
+        if (last) break;
+      }
+    }
+    if (!last) {
+      last = text.replace(/^PythonError:\s*/i, "").trim();
+      if (last.length > 240) last = last.slice(0, 240) + "…";
+    }
+    if (/'int' object is not callable|'float' object is not callable/i.test(text) ||
+        /'int' object is not callable|'float' object is not callable/i.test(last)) {
+      last +=
+        "\n\nUsually this means a name like print got turned into a number, or you wrote base charge instead of base * charge. Check for a missing * and that print still means print.";
+    }
+    return last;
+  }
+
+  function isNumberType(t) {
+    return t === "int" || t === "float";
+  }
+
+  function stdoutContains(stdout, piece) {
+    return String(stdout).indexOf(String(piece)) !== -1;
+  }
+
+  function stdoutShowsNumber(stdout, n) {
+    const s = String(stdout);
+    const re = new RegExp("(^|[^0-9.])" + String(n) + "(\\.0+)?([^0-9.]|$)");
+    return re.test(s);
+  }
+
+  function printUsesName(code, ident) {
+    const stripped = code.replace(/(["'])(?:\\.|(?!\1).)*\1/g, '""');
+    const re = new RegExp("print\\s*\\([^)]*\\b" + ident + "\\b");
+    return re.test(stripped) || new RegExp("print\\s*\\(\\s*" + ident + "\\s*\\)").test(code);
+  }
+
+  function hasOperatorOutsideStrings(code, op) {
+    const stripped = code.replace(/(["'])(?:\\.|(?!\1).)*\1/g, '""');
+    if (op === "+") return /\+/.test(stripped);
+    if (op === "*") return /\*/.test(stripped);
+    if (op === "-") return /-/.test(stripped);
+    return stripped.indexOf(op) !== -1;
+  }
+
+  async function checkChallenge(index) {
+    const code = editor.value;
+    const fb = document.getElementById("fb-" + index);
+
+    if (!code.trim()) {
+      fb.className = "feedback try";
+      fb.textContent = "Write some code in the editor first, then Check!";
+      return;
+    }
+
+    fb.className = "feedback";
+    fb.textContent = "Checking…";
+
+    try {
+      const result = await executeCode(code, INSPECT_NAMES);
+
+      if (result.error) {
+        const html = formatRunConsole(result) || '<span class="err">Error</span>';
+        setConsole(html);
+        fb.className = "feedback try";
+        fb.textContent = "Fix the Python error first, then try Check again.";
+        return;
+      }
+      let html = formatRunConsole(result);
+      if (!html) html = '<span class="muted">(No output — did you print?)</span>';
+      setConsole(html);
+      updateBattleFromVars(result.vars, { fromRun: true });
+
+      let ok = false;
+      let tip = "";
+      const attack = result.vars.attack;
+      const enemyHp = result.vars.enemy_hp;
+      const damage = result.vars.damage;
+      const base = result.vars.base;
+      const charge = result.vars.charge;
+
+      if (index === 0) {
+        if (!attack || !attack.exists) {
+          tip = "Create attack = 20 (a number, no quotes).";
+        } else if (!isNumberType(attack.type)) {
+          tip = "attack should be a number. Use attack = 20 (no quotes).";
+        } else if (Number(attack.value) !== 20) {
+          tip = "attack should equal 20 for this challenge.";
+        } else if (!result.usedPrint) {
+          tip = "Print it: print(attack)";
+        } else if (!printUsesName(code, "attack")) {
+          tip = "Print the variable: print(attack) — don’t only type print(20).";
+        } else if (!stdoutShowsNumber(result.stdout, 20)) {
+          tip = "Your print should show 20 so the ATK badge can light up.";
+        } else {
+          ok = true;
+          updateBattleFromVars(result.vars, {});
+          setBattleLog("Attack power 20 locked in!", "win");
+        }
+      } else if (index === 1) {
+        if (!enemyHp || !enemyHp.exists) {
+          tip = "Create enemy_hp = 60 (a number, no quotes).";
+        } else if (!isNumberType(enemyHp.type)) {
+          tip = "enemy_hp should be a number. Use enemy_hp = 60.";
+        } else if (Number(enemyHp.value) !== 60) {
+          tip = "enemy_hp should equal 60 for this challenge.";
+        } else if (!damage || !damage.exists) {
+          tip = "Also create damage = 20.";
+        } else if (!isNumberType(damage.type)) {
+          tip = "damage should be a number. Use damage = 20.";
+        } else if (Number(damage.value) !== 20) {
+          tip = "damage should equal 20 for this challenge.";
+        } else if (!result.usedPrint) {
+          tip = "Print the remaining HP: print(enemy_hp - damage)";
+        } else if (!hasOperatorOutsideStrings(code, "-")) {
+          tip = "Use the - operator to subtract — don’t just print(40).";
+        } else if (!stdoutShowsNumber(result.stdout, 40)) {
+          tip = "Your print should show 40 (enemy_hp minus damage).";
+        } else {
+          const hasSubExpr =
+            /\benemy_hp\s*-\s*damage\b/.test(code) ||
+            /\bdamage\s*-\s*enemy_hp\b/.test(code) ||
+            /print\s*\([^)]*-/.test(code) ||
+            /\w+\s*=\s*[^\n]*-/.test(code);
+          // Reject print-only-40: require subtraction involving the vars somehow
+          const printOnlyForty =
+            /print\s*\(\s*40\s*\)/.test(code) &&
+            !/\benemy_hp\s*-/.test(code) &&
+            !/-\s*damage\b/.test(code);
+          if (printOnlyForty || !hasSubExpr) {
+            tip = "Subtract with -: print(enemy_hp - damage)";
+          } else {
+            ok = true;
+            updateBattleFromVars(result.vars, {});
+            updateHpBar(40, 60, true);
+            showDamageFloat(20, false);
+            setBattleLog("Hit! 20 damage — dummy has 40 HP left.", "hit");
+          }
+        }
+      } else if (index === 2) {
+        if (!base || !base.exists) {
+          tip = "Create base = 15 (a number, no quotes).";
+        } else if (!isNumberType(base.type)) {
+          tip = "base should be a number. Use base = 15.";
+        } else if (Number(base.value) !== 15) {
+          tip = "base should equal 15 for this challenge.";
+        } else if (!charge || !charge.exists) {
+          tip = "Also create charge = 2.";
+        } else if (!isNumberType(charge.type)) {
+          tip = "charge should be a number. Use charge = 2.";
+        } else if (Number(charge.value) !== 2) {
+          tip = "charge should equal 2 for this challenge.";
+        } else if (!result.usedPrint) {
+          tip = "Print the charged hit: print(base * charge)";
+        } else if (!hasOperatorOutsideStrings(code, "*")) {
+          tip = "Use the * operator to multiply — don’t just print(30).";
+        } else if (!stdoutShowsNumber(result.stdout, 30)) {
+          tip = "Your print should show 30 (base times charge).";
+        } else {
+          const hasMulExpr =
+            /\bbase\s*\*\s*charge\b/.test(code) ||
+            /\bcharge\s*\*\s*base\b/.test(code) ||
+            /print\s*\([^)]*\*/.test(code) ||
+            /\w+\s*=\s*[^\n]*\*/.test(code);
+          const printOnlyThirty =
+            /print\s*\(\s*30\s*\)/.test(code) &&
+            !/\bbase\s*\*/.test(code) &&
+            !/\*\s*charge\b/.test(code);
+          if (printOnlyThirty || !hasMulExpr) {
+            tip = "Multiply with *: print(base * charge)";
+          } else {
+            ok = true;
+            updateBattleFromVars({}, {
+              forceRemaining: 30,
+              forceDamage: 30,
+              charged: true
+            });
+            // Actually 60-30=30 remaining after charged strike flourish preview
+            updateHpBar(30, 60, true);
+            showDamageFloat(30, true);
+            setBattleLog("Charged Power Strike for 30!", "win");
+          }
+        }
+      }
+
+      if (ok) {
+        passed[index] = true;
+        const ch = document.getElementById("ch-" + index);
+        ch.classList.add("passed");
+        const stars = document.getElementById("stars-" + index);
+        stars.textContent = "★";
+        stars.classList.remove("empty");
+        fb.className = "feedback win";
+        fb.textContent = WIN_MESSAGES[index];
+        updateProgress();
+      } else {
+        fb.className = "feedback try";
+        fb.textContent = tip || "Not quite — tweak your code and try again!";
+      }
+    } catch (err) {
+      fb.className = "feedback try";
+      fb.textContent = "Something went wrong: " + (err.message || err);
+      setConsole('<span class="err">Python says: ' + escapeHtml(String(err.message || err)) + "</span>");
+    }
+  }
+
+  paintFighter();
+  updateHpBar(DUMMY_MAX, DUMMY_MAX, false);
+  editor.value = '# Challenge 1 starter idea:\n# attack = 20\n# print(attack)\n';
+
+  loadPyodideAsync();
+})();
+</script>
+</body>
+</html>
