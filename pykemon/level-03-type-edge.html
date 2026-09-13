@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>PyKémon — Level 2: Power Strike</title>
+<title>PyKémon — Level 3: Type Edge</title>
 <style>
   :root {
     --cave-deep: #0b0e14;
@@ -1102,6 +1102,62 @@
       radial-gradient(2px 2px at 25% 80%, var(--sea), transparent);
     animation: twinkle 1.2s ease-in-out infinite alternate;
   }
+
+  .type-edge-banner {
+    text-align: center;
+    font-weight: 800;
+    font-size: .95rem;
+    letter-spacing: .04em;
+    padding: .45rem .6rem;
+    margin: .35rem 0 .55rem;
+    border-radius: 10px;
+    background: rgba(240,193,75,.08);
+    border: 1px dashed var(--cave-border);
+    color: var(--fog-dim);
+  }
+  .type-edge-banner.super {
+    background: rgba(46,204,113,.14);
+    border-color: var(--mint);
+    color: var(--mint);
+    box-shadow: 0 0 18px rgba(46,204,113,.2);
+  }
+  .type-edge-banner.normal {
+    background: rgba(139,148,158,.1);
+    border-color: var(--cave-border);
+    color: var(--fog);
+  }
+  .matchup-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .45rem;
+    justify-content: center;
+    margin: .55rem 0 .25rem;
+  }
+  .matchup-chip {
+    font-family: var(--mono);
+    font-size: .78rem;
+    font-weight: 700;
+    padding: .28rem .65rem;
+    border-radius: 999px;
+    background: var(--cave-deep);
+    border: 1px solid var(--cave-border);
+    color: var(--gold-bright);
+  }
+  .matchup-chip.water { color: #7dd3fc; border-color: rgba(56,189,248,.45); }
+  .matchup-chip.fire { color: #ffb347; border-color: rgba(255,107,53,.45); }
+  .matchup-chip.electric { color: var(--electric); border-color: rgba(255,229,102,.45); }
+  .enemy-type-badge {
+    display: inline-block;
+    font-size: .68rem;
+    font-weight: 800;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    padding: .15rem .45rem;
+    border-radius: 999px;
+    background: linear-gradient(180deg, #ff8a3d, #c2410c);
+    color: #fff;
+    margin-bottom: .25rem;
+  }
 </style>
 </head>
 <body>
@@ -1110,20 +1166,21 @@
   <div class="cave-sparkles" aria-hidden="true"></div>
   <img class="title-logo" src="art/logo.svg" alt="PyKémon" />
   <div class="brand">Original arena · not Nintendo</div>
-  <h1>Level 2: Power Strike</h1>
+  <h1>Level 3: Type Edge</h1>
   <div class="story">
-    Your starter has a card — now teach them to <strong>hit</strong>!
-    Numbers power every strike: set <strong>attack</strong>, subtract from
-    <strong>enemy_hp</strong>, and multiply for a charged blow.
-    Math in Python = damage in the arena.
+    Numbers hit — now <strong>types</strong> decide who hits harder!
+    Learn <strong>if / else</strong> to spot an edge:
+    <strong>Water &gt; Fire</strong>, <strong>Fire &gt; Electric</strong>,
+    <strong>Electric &gt; Water</strong>. Compare with <strong>==</strong>,
+    then print <strong>SUPER</strong> advantage… or just normal.
   </div>
-  <a class="btn btn-gold" id="btn-start" href="#lesson">Enter Training ⚡</a>
+  <a class="btn btn-gold" id="btn-start" href="#lesson">Enter Arena ⚡</a>
   <p class="ipad-tip">On iPad: if this button does nothing, open the lesson from the Safari web link (Files preview often blocks code).</p>
 </section>
 
 <main id="lesson">
   <div class="topbar">
-    <h2><span aria-hidden="true">⚡</span> Level 2 — Power Strike</h2>
+    <h2><span aria-hidden="true">⚡</span> Level 3 — Type Edge</h2>
     <div class="topbar-actions">
       <button type="button" class="btn btn-jump-code" id="btn-jump-code" title="Jump to your code editor">✏️ Your code</button>
       <div class="status-pill loading" id="py-status" role="status">
@@ -1141,7 +1198,7 @@
 
   <p class="code-tip">
     <strong>Tip:</strong> Type Python in the big editor below, then tap <strong>Run</strong>.
-    Watch your fighter’s ATK and the dummy’s HP update from your numbers.
+    Watch the type edge banner light up when your <code>if</code> finds an advantage.
   </p>
 
   <div class="mobile-code-bar">
@@ -1169,7 +1226,7 @@
 
     <aside class="arena-col">
       <section class="panel arena-panel">
-        <div class="arena-title">Live training battle</div>
+        <div class="arena-title">Live type matchup</div>
         <details class="art-drawer" id="art-drawer">
           <summary>
             <span>
@@ -1177,8 +1234,8 @@
               <span class="art-drawer-label-open">🃏 Hide cards</span>
             </span>
             <span class="art-compact" id="art-compact">
-              <span class="dim">ATK</span> <span id="compact-atk">--</span>
-              · <span class="dim">HP</span> <span id="compact-hp">60 / 60</span>
+              <span class="dim">EDGE</span> <span id="compact-edge">--</span>
+              · <span class="dim">DMG</span> <span id="compact-dmg">--</span>
             </span>
           </summary>
           <div class="battle-stage" id="battle-stage">
@@ -1186,16 +1243,16 @@
 
             <div class="fighter">
               <div class="fighter-label">You</div>
-              <article class="pk-mini" id="player-card" data-type="Electric">
+              <article class="pk-mini" id="player-card" data-type="Water">
                 <div class="pk-mini-inner">
                   <header class="pk-mini-top">
-                    <div class="atk-badge"><span class="atk-label">ATK</span><span class="atk-val" id="atk-val">--</span></div>
-                    <div class="hp-mini">HP 60</div>
+                    <div class="atk-badge"><span class="atk-label">EDGE</span><span class="atk-val" id="edge-val">--</span></div>
+                    <div class="hp-mini" id="my-type-pill">Water</div>
                   </header>
                   <div class="pk-mini-art">
-                    <img id="player-art" src="art/sparkybolt.svg" alt="Sparkybolt" />
+                    <img id="player-art" src="art/aquafin.svg" alt="Aquafin" />
                   </div>
-                  <div class="pk-mini-name" id="player-name">Sparkybolt</div>
+                  <div class="pk-mini-name" id="player-name">Aquafin</div>
                 </div>
               </article>
             </div>
@@ -1203,14 +1260,15 @@
             <div class="vs-badge">VS</div>
 
             <div class="fighter dummy">
-              <div class="fighter-label">Training dummy</div>
+              <div class="fighter-label">Rival</div>
               <div class="dummy-card" id="dummy-card">
                 <div class="dummy-inner">
+                  <div class="enemy-type-badge" id="enemy-type-pill">Fire</div>
                   <div class="dummy-face" id="dummy-face">
-                    🎯
+                    🔥
                     <span class="dmg-float" id="dmg-float"></span>
                   </div>
-                  <div class="dummy-name">Practice Bot</div>
+                  <div class="dummy-name" id="enemy-name">Emberpup</div>
                   <div class="hp-bar-wrap" title="Enemy HP">
                     <div class="hp-bar-fill" id="hp-fill"></div>
                   </div>
@@ -1222,13 +1280,20 @@
               </div>
             </div>
 
-            <div class="battle-log" id="battle-log">Set attack power to begin training.</div>
+            <div class="type-edge-banner" id="edge-banner">Set my_type &amp; enemy_type — then if for an edge.</div>
+            <div class="matchup-row" id="matchup-row" aria-hidden="true" style="display:none;">
+              <span class="matchup-chip water" id="chip-my">Water</span>
+              <span class="matchup-chip" id="chip-vs">vs</span>
+              <span class="matchup-chip fire" id="chip-enemy">Fire</span>
+            </div>
+
+            <div class="battle-log" id="battle-log">Compare types with if and == to find SUPER advantage.</div>
           </div>
         </details>
 
         <div class="arena-title" style="margin-top:1rem;">Your fighter</div>
         <div class="starter-picker" id="starter-picker">
-          <button type="button" class="starter-btn picked" data-starter="Sparkybolt" data-ptype="Electric" data-art="art/sparkybolt.svg">
+          <button type="button" class="starter-btn" data-starter="Sparkybolt" data-ptype="Electric" data-art="art/sparkybolt.svg">
             <img src="art/sparkybolt.svg" alt="" />
             <strong>Sparkybolt</strong>
           </button>
@@ -1236,7 +1301,7 @@
             <img src="art/emberpup.svg" alt="" />
             <strong>Emberpup</strong>
           </button>
-          <button type="button" class="starter-btn" data-starter="Aquafin" data-ptype="Water" data-art="art/aquafin.svg">
+          <button type="button" class="starter-btn picked" data-starter="Aquafin" data-ptype="Water" data-art="art/aquafin.svg">
             <img src="art/aquafin.svg" alt="" />
             <strong>Aquafin</strong>
           </button>
@@ -1245,69 +1310,83 @@
     </aside>
 
     <section class="panel lesson-text lesson-details">
-      <h3>📜 Quick Lesson: Numbers &amp; attack math</h3>
+      <h3>📜 Quick Lesson: if / else &amp; type edge</h3>
       <p>
-        Attack damage is a <strong>number</strong> — no quotes.
-        You can <strong>subtract</strong> to find remaining HP and
-        <strong>multiply</strong> for a charged strike.
+        Types matter! In PyKémon: <strong>Water beats Fire</strong>,
+        <strong>Fire beats Electric</strong>, <strong>Electric beats Water</strong>.
+        Use <code>if</code> with <code>==</code> to check a matchup, and
+        <code>else</code> when it’s only a normal hit.
       </p>
-      <div class="example-box" data-code="attack = 20
-print(attack)">
+      <div class="example-box" data-code="my_type = &quot;Water&quot;
+enemy_type = &quot;Fire&quot;
+if my_type == &quot;Water&quot; and enemy_type == &quot;Fire&quot;:
+    print(&quot;SUPER advantage!&quot;)">
         <div class="example-code">
-          <span class="comment"># Attack power is a number</span><br>
-          attack = <span class="num">20</span><br>
-          <span class="fn">print</span>(attack)<br>
-          <span class="out">→ 20</span>
+          <span class="comment"># Water vs Fire → type edge!</span><br>
+          my_type = <span class="str">"Water"</span><br>
+          enemy_type = <span class="str">"Fire"</span><br>
+          <span class="kw">if</span> my_type <span class="op">==</span> <span class="str">"Water"</span> <span class="kw">and</span> enemy_type <span class="op">==</span> <span class="str">"Fire"</span>:<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">print</span>(<span class="str">"SUPER advantage!"</span>)<br>
+          <span class="out">→ SUPER advantage!</span>
         </div>
         <button type="button" class="try-example">Try this ▸</button>
       </div>
-      <div class="example-box" data-code="enemy_hp = 60
-damage = 20
-print(enemy_hp - damage)">
+      <div class="example-box" data-code="damage = 20
+multiplier = 2
+print(damage * multiplier)">
         <div class="example-code">
-          <span class="comment"># Remaining HP = enemy_hp minus damage</span><br>
-          enemy_hp = <span class="num">60</span><br>
+          <span class="comment"># Advantage multiplies damage</span><br>
           damage = <span class="num">20</span><br>
-          <span class="fn">print</span>(enemy_hp <span class="op">-</span> damage)<br>
+          multiplier = <span class="num">2</span><br>
+          <span class="fn">print</span>(damage <span class="op">*</span> multiplier)<br>
           <span class="out">→ 40</span>
         </div>
         <button type="button" class="try-example">Try this ▸</button>
       </div>
-      <div class="example-box" data-code="base = 15
-charge = 2
-print(base * charge)">
+      <div class="example-box" data-code="my_type = &quot;Water&quot;
+enemy_type = &quot;Fire&quot;
+if my_type == &quot;Water&quot; and enemy_type == &quot;Fire&quot;:
+    print(&quot;SUPER&quot;)
+else:
+    print(&quot;normal&quot;)">
         <div class="example-code">
-          <span class="comment"># Charged strike multiplies</span><br>
-          base = <span class="num">15</span><br>
-          charge = <span class="num">2</span><br>
-          <span class="fn">print</span>(base <span class="op">*</span> charge)<br>
-          <span class="out">→ 30</span>
+          <span class="comment"># if / else: SUPER vs normal</span><br>
+          my_type = <span class="str">"Water"</span><br>
+          enemy_type = <span class="str">"Fire"</span><br>
+          <span class="kw">if</span> my_type <span class="op">==</span> <span class="str">"Water"</span> <span class="kw">and</span> enemy_type <span class="op">==</span> <span class="str">"Fire"</span>:<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">print</span>(<span class="str">"SUPER"</span>)<br>
+          <span class="kw">else</span>:<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">print</span>(<span class="str">"normal"</span>)<br>
+          <span class="out">→ SUPER &nbsp;<span class="comment">(if branch — Water beats Fire)</span></span>
         </div>
         <button type="button" class="try-example">Try this ▸</button>
       </div>
       <div class="math-row">
-        <div class="math-chip">− <span>subtract</span></div>
-        <div class="math-chip">* <span>multiply</span></div>
-        <div class="math-chip">+ <span>add</span></div>
+        <div class="math-chip">if <span>check a matchup</span></div>
+        <div class="math-chip">== <span>equals</span></div>
+        <div class="math-chip">else <span>otherwise</span></div>
+        <div class="math-chip">* <span>multiply damage</span></div>
       </div>
-      <p style="margin-top:.85rem;">Run your code and watch the training dummy take hits. Real Python. Real damage. ✨</p>
+      <p style="margin-top:.85rem;">Remember: indent lines under <code>if</code> / <code>else</code>, and end those lines with a colon <code>:</code>. ✨</p>
     </section>
   </div>
 
   <section class="panel">
     <h3>⚔️ Challenges</h3>
     <p style="color:var(--fog-dim);margin-bottom:1rem;font-size:.95rem;">
-      Write code in the editor, hit <strong>Run</strong> to update the battle, then <strong>Check</strong> each challenge.
+      Write code in the editor, hit <strong>Run</strong> to update the matchup, then <strong>Check</strong> each challenge.
       Keep adding lines — you can reuse the same code as you go.
     </p>
 
     <div class="challenge" id="ch-0" data-challenge="0">
       <div class="challenge-header">
-        <div class="challenge-title"><span class="stars empty" id="stars-0">☆</span> Challenge 1 — Set attack power</div>
+        <div class="challenge-title"><span class="stars empty" id="stars-0">☆</span> Challenge 1 — Spot SUPER advantage</div>
       </div>
       <p class="challenge-desc">
-        Create <code>attack = 20</code> (the number twenty, no quotes) and
-        <code>print(attack)</code>. Your card’s ATK badge will light up!
+        Set <code>my_type = "Water"</code> and <code>enemy_type = "Fire"</code>.
+        Use an <code>if</code> with <code>==</code> so Water-vs-Fire prints a message with
+        <strong>SUPER</strong> and <strong>advantage</strong> (any order is fine).
+        Your source must include <code>if</code> and <code>==</code>.
       </p>
       <div class="toolbar">
         <button type="button" class="btn btn-check btn-sm" data-check="0" disabled>Check</button>
@@ -1319,12 +1398,12 @@ print(base * charge)">
 
     <div class="challenge" id="ch-1" data-challenge="1">
       <div class="challenge-header">
-        <div class="challenge-title"><span class="stars empty" id="stars-1">☆</span> Challenge 2 — Deal damage</div>
+        <div class="challenge-title"><span class="stars empty" id="stars-1">☆</span> Challenge 2 — Advantage damage</div>
       </div>
       <p class="challenge-desc">
-        Create <code>enemy_hp = 60</code> and <code>damage = 20</code>, then print the remaining HP with
-        subtraction: <code>print(enemy_hp - damage)</code> → console shows <strong>40</strong>.
-        You must use the <code>-</code> operator (printing 40 alone won’t pass). Watch the dummy’s HP bar drop!
+        Create <code>damage = 20</code> and <code>multiplier = 2</code>, then print the boosted hit with
+        multiplication: <code>print(damage * multiplier)</code> → console shows <strong>40</strong>.
+        You must use the <code>*</code> operator (printing 40 alone won’t pass). Watch the rival take a SUPER hit!
       </p>
       <div class="toolbar">
         <button type="button" class="btn btn-check btn-sm" data-check="1" disabled>Check</button>
@@ -1336,12 +1415,14 @@ print(base * charge)">
 
     <div class="challenge" id="ch-2" data-challenge="2">
       <div class="challenge-header">
-        <div class="challenge-title"><span class="stars empty" id="stars-2">☆</span> Challenge 3 — Charged strike</div>
+        <div class="challenge-title"><span class="stars empty" id="stars-2">☆</span> Challenge 3 — SUPER vs normal</div>
       </div>
       <p class="challenge-desc">
-        Create <code>base = 15</code> and <code>charge = 2</code>, then print a charged hit:
-        <code>print(base * charge)</code> → <strong>30</strong>.
-        Require the <code>*</code> operator — that’s a Power Strike!
+        Keep <code>my_type = "Water"</code> and <code>enemy_type = "Fire"</code>.
+        Write <code>if</code> … <code>else</code>: the <strong>if</strong> branch prints something with
+        <strong>SUPER</strong>; the <strong>else</strong> prints something with <strong>normal</strong>.
+        Water vs Fire must take the <strong>if</strong> branch (console shows SUPER, not only normal).
+        Require <code>if</code> and <code>else</code> in your source.
       </p>
       <div class="toolbar">
         <button type="button" class="btn btn-check btn-sm" data-check="2" disabled>Check</button>
@@ -1353,20 +1434,19 @@ print(base * charge)">
   </section>
 
   <section class="panel" id="recap">
-    <h3>⭐ Power Strike learned!</h3>
-    <p style="font-size:1.15rem;color:var(--gold-bright);">The training dummy is toast — your math hits hard!</p>
+    <h3>⭐ Type Edge learned!</h3>
+    <p style="font-size:1.15rem;color:var(--gold-bright);">You found the edge — SUPER hits when the types line up!</p>
     <p style="margin-top:.5rem;color:var(--fog);">What you learned:</p>
     <ul>
-      <li><strong>attack</strong> / <strong>damage</strong> are numbers — they power every strike.</li>
-      <li><strong>−</strong> subtracts: <code style="color:var(--gold)">enemy_hp - damage</code> finds remaining HP.</li>
-      <li><strong>*</strong> multiplies: <code style="color:var(--gold)">base * charge</code> doubles a charged hit.</li>
+      <li><strong>if</strong> + <strong>==</strong> checks a type matchup (Water vs Fire, and friends).</li>
+      <li><strong>*</strong> multiplies damage when you have the edge: <code style="color:var(--gold)">damage * multiplier</code>.</li>
+      <li><strong>else</strong> covers the “normal” path when there is no advantage.</li>
     </ul>
-    <p style="margin-top:1.25rem;font-size:1.05rem;">Ready for <strong>Type Edge</strong>? <a href="level-03-type-edge.html" style="color:var(--gold-bright)">Level 3 →</a></p>
+    <p style="margin-top:1.25rem;font-size:1.05rem;">More PyKémon battles ahead. Rest up, trainer! ⚡</p>
   </section>
 
   <p class="footer-note"><a href="../index.html">← PyQuest &amp; PyKémon hub</a> · Real Python in your browser via Pyodide · No account needed</p>
 </main>
-
 <script>
 (function () {
   "use strict";
@@ -1389,7 +1469,8 @@ print(base * charge)">
   const hpFill = document.getElementById("hp-fill");
   const hpText = document.getElementById("hp-text");
   const battleLog = document.getElementById("battle-log");
-  const atkVal = document.getElementById("atk-val");
+  const edgeVal = document.getElementById("edge-val");
+  const edgeBanner = document.getElementById("edge-banner");
   const artDrawer = document.getElementById("art-drawer");
 
   (function syncArtDrawer() {
@@ -1406,54 +1487,69 @@ print(base * charge)">
 
   const DUMMY_MAX = 60;
 
+  const TYPE_ADVANTAGE = {
+    Water: "Fire",
+    Fire: "Electric",
+    Electric: "Water"
+  };
+
+  const ENEMY_BY_TYPE = {
+    Fire: { name: "Emberpup", art: "art/emberpup.svg", face: "🔥" },
+    Electric: { name: "Sparkybolt", art: "art/sparkybolt.svg", face: "⚡" },
+    Water: { name: "Aquafin", art: "art/aquafin.svg", face: "💧" }
+  };
+
   let pyodide = null;
   let pyReady = false;
   let pyLoading = null;
   const passed = [false, false, false];
   const hintIndex = [0, 0, 0];
   let pickedStarter = {
-    name: "Sparkybolt",
-    ptype: "Electric",
-    art: "art/sparkybolt.svg"
+    name: "Aquafin",
+    ptype: "Water",
+    art: "art/aquafin.svg"
   };
   let battleState = {
-    attack: null,
-    enemyHp: DUMMY_MAX,
-    lastDamage: 0,
-    charged: false
+    myType: null,
+    enemyType: "Fire",
+    damage: null,
+    multiplier: null,
+    edge: null,
+    lastDamage: 0
   };
 
   const HINTS = [
     [
-      "Numbers don’t need quotes: attack = 20",
-      "Print the variable: print(attack) — not just the number 20 by itself.",
-      "Both lines matter — create attack, then print(attack)."
+      "Strings need quotes: my_type = \"Water\" and enemy_type = \"Fire\"",
+      "Compare with two equals: if my_type == \"Water\" and enemy_type == \"Fire\":",
+      "Indent a print under the if that says SUPER advantage (both words)."
     ],
     [
-      "Set both boxes: enemy_hp = 60 and damage = 20",
-      "Subtract with a minus sign: print(enemy_hp - damage)",
-      "Printing 40 alone won’t pass — the - must appear in your code!"
+      "Numbers don’t need quotes: damage = 20 and multiplier = 2",
+      "Multiply with *: print(damage * multiplier)",
+      "Printing 40 alone won’t pass — the * must appear in your code!"
     ],
     [
-      "base = 15 and charge = 2 (numbers, no quotes).",
-      "Multiply with *: print(base * charge)",
-      "The * must appear in your source — printing 30 alone won’t pass."
+      "Keep my_type = \"Water\" and enemy_type = \"Fire\".",
+      "if …: print something with SUPER. else: print something with normal.",
+      "Water vs Fire should take the if branch — console must show SUPER (not only normal)."
     ]
   ];
 
   const WIN_MESSAGES = [
-    "Attack power locked! ATK badge glows. ⭐",
-    "Hit landed! Dummy HP drops to 40. ⭐⭐",
-    "Charged strike! Power Strike unlocked! ⭐⭐⭐"
+    "Type edge found! SUPER advantage locked. ⭐",
+    "Boosted hit! 20 × 2 = 40 damage. ⭐⭐",
+    "if / else mastered — SUPER vs normal! ⭐⭐⭐"
   ];
 
   const WIPE_VARS = [
-    "attack", "damage", "enemy_hp", "base", "charge",
-    "hp", "name", "ptype", "atk", "power", "remaining"
+    "my_type", "enemy_type", "damage", "multiplier",
+    "attack", "enemy_hp", "base", "charge", "hp", "name", "ptype",
+    "atk", "power", "remaining", "result", "edge"
   ];
 
   const INSPECT_NAMES = [
-    "attack", "damage", "enemy_hp", "base", "charge"
+    "my_type", "enemy_type", "damage", "multiplier"
   ];
 
   function setConsole(html) {
@@ -1477,7 +1573,7 @@ print(base * charge)">
     battleLog.textContent = text;
   }
 
-  function updateHpBar(current, maxHp, animate) {
+  function updateHpBar(current, maxHp) {
     const max = maxHp || DUMMY_MAX;
     const cur = Math.max(0, Math.min(max, Number(current)));
     const pct = (cur / max) * 100;
@@ -1486,21 +1582,15 @@ print(base * charge)">
     if (pct <= 35) hpFill.classList.add("low");
     else if (pct <= 65) hpFill.classList.add("mid");
     hpText.textContent = cur + " / " + max;
-    var cHp = document.getElementById("compact-hp");
-    if (cHp) cHp.textContent = cur + " / " + max;
     dummyCard.classList.toggle("ko", cur <= 0);
     dummyFace.classList.toggle("woozy", cur < max && cur > 0);
-    var face = "🎯";
-    if (cur <= 0) face = "💥";
-    else if (cur < max) face = "😵";
-    dummyFace.innerHTML = face + '<span class="dmg-float" id="dmg-float"></span>';
   }
 
-  function showDamageFloat(amount, charged) {
+  function showDamageFloat(amount, superHit) {
     const el = document.getElementById("dmg-float") || dmgFloat;
     if (!el) return;
-    el.textContent = "-" + amount;
-    el.className = "dmg-float show" + (charged ? " charge" : "");
+    el.textContent = "-" + amount + (superHit ? " SUPER" : "");
+    el.className = "dmg-float show" + (superHit ? " charge" : "");
     dummyCard.classList.remove("hit");
     void dummyCard.offsetWidth;
     dummyCard.classList.add("hit");
@@ -1517,92 +1607,120 @@ print(base * charge)">
     document.getElementById("player-art").src = pickedStarter.art;
     document.getElementById("player-art").alt = pickedStarter.name;
     playerCard.setAttribute("data-type", pickedStarter.ptype);
+    document.getElementById("my-type-pill").textContent = pickedStarter.ptype;
+  }
+
+  function paintEnemy(enemyType) {
+    const info = ENEMY_BY_TYPE[enemyType] || ENEMY_BY_TYPE.Fire;
+    document.getElementById("enemy-name").textContent = info.name;
+    document.getElementById("enemy-type-pill").textContent = enemyType || "Fire";
+    const face = document.getElementById("dummy-face");
+    if (face) {
+      face.innerHTML = info.face + '<span class="dmg-float" id="dmg-float"></span>';
+    }
+  }
+
+  function isAdvantage(myType, enemyType) {
+    if (!myType || !enemyType) return false;
+    return TYPE_ADVANTAGE[myType] === enemyType;
+  }
+
+  function setEdgeUI(edge, myType, enemyType) {
+    const cEdge = document.getElementById("compact-edge");
+    const row = document.getElementById("matchup-row");
+    if (edge === "super") {
+      edgeVal.textContent = "2×";
+      if (cEdge) cEdge.textContent = "SUPER";
+      edgeBanner.textContent = "SUPER EFFECTIVE — type edge!";
+      edgeBanner.className = "type-edge-banner super";
+    } else if (edge === "normal") {
+      edgeVal.textContent = "1×";
+      if (cEdge) cEdge.textContent = "normal";
+      edgeBanner.textContent = "Normal hit — no type edge.";
+      edgeBanner.className = "type-edge-banner normal";
+    } else {
+      edgeVal.textContent = "--";
+      if (cEdge) cEdge.textContent = "--";
+      edgeBanner.textContent = "Set my_type & enemy_type — then if for an edge.";
+      edgeBanner.className = "type-edge-banner";
+    }
+    if (myType && enemyType && row) {
+      row.style.display = "flex";
+      document.getElementById("chip-my").textContent = myType;
+      document.getElementById("chip-my").className = "matchup-chip " + String(myType).toLowerCase();
+      document.getElementById("chip-enemy").textContent = enemyType;
+      document.getElementById("chip-enemy").className = "matchup-chip " + String(enemyType).toLowerCase();
+    }
   }
 
   function updateBattleFromVars(vars, opts) {
     opts = opts || {};
-    let attack = null;
-    let enemyHp = null;
+    let myType = null;
+    let enemyType = null;
     let damage = null;
-    let base = null;
-    let charge = null;
+    let multiplier = null;
 
-    if (vars && vars.attack && vars.attack.exists && isNumberType(vars.attack.type)) {
-      attack = Number(vars.attack.value);
+    if (vars && vars.my_type && vars.my_type.exists && vars.my_type.type === "str") {
+      myType = String(vars.my_type.value);
     }
-    if (vars && vars.enemy_hp && vars.enemy_hp.exists && isNumberType(vars.enemy_hp.type)) {
-      enemyHp = Number(vars.enemy_hp.value);
+    if (vars && vars.enemy_type && vars.enemy_type.exists && vars.enemy_type.type === "str") {
+      enemyType = String(vars.enemy_type.value);
     }
     if (vars && vars.damage && vars.damage.exists && isNumberType(vars.damage.type)) {
       damage = Number(vars.damage.value);
     }
-    if (vars && vars.base && vars.base.exists && isNumberType(vars.base.type)) {
-      base = Number(vars.base.value);
-    }
-    if (vars && vars.charge && vars.charge.exists && isNumberType(vars.charge.type)) {
-      charge = Number(vars.charge.value);
+    if (vars && vars.multiplier && vars.multiplier.exists && isNumberType(vars.multiplier.type)) {
+      multiplier = Number(vars.multiplier.value);
     }
 
-    if (attack !== null) {
-      atkVal.textContent = String(attack);
-      battleState.attack = attack;
-      var cAtk = document.getElementById("compact-atk");
-      if (cAtk) cAtk.textContent = String(attack);
-    } else if (opts.resetAtk) {
-      atkVal.textContent = "--";
-      battleState.attack = null;
-      var cAtk2 = document.getElementById("compact-atk");
-      if (cAtk2) cAtk2.textContent = "--";
+    if (enemyType) {
+      battleState.enemyType = enemyType;
+      paintEnemy(enemyType);
+    }
+    if (myType) {
+      battleState.myType = myType;
+      // Sync card type label from code when present
+      document.getElementById("my-type-pill").textContent = myType;
+      playerCard.setAttribute("data-type", myType);
     }
 
-    let remaining = DUMMY_MAX;
-    let dealt = 0;
-    let charged = false;
-
-    if (enemyHp !== null && damage !== null) {
-      remaining = enemyHp - damage;
-      dealt = damage;
-    } else if (enemyHp !== null && attack !== null && damage === null) {
-      remaining = enemyHp - attack;
-      dealt = attack;
-    } else if (opts.forceRemaining != null) {
-      remaining = opts.forceRemaining;
-      dealt = opts.forceDamage || 0;
-      charged = !!opts.charged;
-    } else if (base !== null && charge !== null && opts.showCharge) {
-      dealt = base * charge;
-      remaining = Math.max(0, DUMMY_MAX - dealt);
-      charged = true;
-    } else if (attack !== null && opts.fromRun) {
-      // show attack ready but keep full HP until damage math exists
-      remaining = battleState.enemyHp < DUMMY_MAX && (enemyHp !== null || damage !== null)
-        ? battleState.enemyHp
-        : DUMMY_MAX;
+    let edge = null;
+    if (myType && enemyType) {
+      edge = isAdvantage(myType, enemyType) ? "super" : "normal";
     }
+    if (opts.forceEdge) edge = opts.forceEdge;
+    battleState.edge = edge;
+    setEdgeUI(edge, myType || battleState.myType, enemyType || battleState.enemyType);
 
-    if (enemyHp !== null && damage !== null) {
-      battleState.enemyHp = remaining;
+    const cDmg = document.getElementById("compact-dmg");
+    if (damage !== null && multiplier !== null) {
+      const dealt = damage * multiplier;
+      battleState.damage = damage;
+      battleState.multiplier = multiplier;
       battleState.lastDamage = dealt;
-      updateHpBar(remaining, enemyHp > 0 ? enemyHp : DUMMY_MAX, true);
-      if (dealt > 0 && !opts.skipAnim) {
-        showDamageFloat(dealt, false);
-        setBattleLog("Hit! " + dealt + " damage — dummy has " + remaining + " HP left.", "hit");
-      }
-    } else if (opts.forceRemaining != null) {
-      battleState.enemyHp = remaining;
-      battleState.lastDamage = dealt;
-      updateHpBar(remaining, DUMMY_MAX, true);
-      if (dealt > 0 && !opts.skipAnim) {
-        showDamageFloat(dealt, charged);
+      if (cDmg) cDmg.textContent = String(dealt);
+      const remaining = Math.max(0, DUMMY_MAX - dealt);
+      updateHpBar(remaining, DUMMY_MAX);
+      if (!opts.skipAnim) {
+        showDamageFloat(dealt, edge === "super" || multiplier >= 2);
         setBattleLog(
-          charged
-            ? "Charged Power Strike for " + dealt + "!"
-            : "Hit! " + dealt + " damage.",
-          charged ? "win" : "hit"
+          (edge === "super" ? "SUPER hit! " : "Hit! ") + dealt + " damage (" + damage + " × " + multiplier + ").",
+          edge === "super" ? "win" : "hit"
         );
       }
-    } else if (attack !== null) {
-      setBattleLog("Attack power " + attack + " ready. Subtract damage next!", "");
+    } else if (damage !== null) {
+      battleState.damage = damage;
+      if (cDmg) cDmg.textContent = String(damage);
+      if (edge === "super") {
+        setBattleLog("Advantage ready — multiply damage next!", "win");
+      }
+    } else if (edge === "super") {
+      if (cDmg) cDmg.textContent = "--";
+      setBattleLog("Type edge! Water beats Fire (and friends). Multiply for SUPER damage.", "win");
+    } else if (edge === "normal") {
+      setBattleLog("No edge this time — try Water vs Fire for SUPER.", "");
+    } else if (opts.fromRun) {
+      setBattleLog("Compare types with if and == to find SUPER advantage.", "");
     }
   }
 
@@ -1611,10 +1729,10 @@ print(base * charge)">
     dummyCard.classList.remove("flourish");
     void dummyCard.offsetWidth;
     dummyCard.classList.add("flourish");
-    updateHpBar(0, DUMMY_MAX, true);
-    dummyFace.innerHTML = '💫<span class="dmg-float" id="dmg-float"></span>';
-    showDamageFloat(30, true);
-    setBattleLog("Power Strike learned! Practice Bot is out! ⭐", "win");
+    updateHpBar(0, DUMMY_MAX);
+    setEdgeUI("super", "Water", "Fire");
+    showDamageFloat(40, true);
+    setBattleLog("Type Edge learned! SUPER advantage unlocked! ⭐", "win");
   }
 
   function updateProgress() {
@@ -1640,7 +1758,6 @@ print(base * charge)">
       paintFighter();
     });
   });
-
 
   function focusCodeEditor() {
     try {
@@ -1767,7 +1884,7 @@ print(base * charge)">
         pyReady = true;
         setStatus("ready", "Python ready");
         setButtonsEnabled(true);
-        setConsole('<span class="ok">Python is ready. Type code and hit Run to train your strike!</span>');
+        setConsole('<span class="ok">Python is ready. Type code and hit Run to find your type edge!</span>');
       } catch (err) {
         pyLoading = null;
         setStatus("error", "Load failed");
@@ -1919,31 +2036,8 @@ json.dumps(_out)
       }
       setConsole(html);
       if (result.ok) {
-        // Reset dummy HP display baseline then apply vars
-        if (!(result.vars.enemy_hp && result.vars.enemy_hp.exists &&
-              result.vars.damage && result.vars.damage.exists)) {
-          if (!(result.vars.base && result.vars.base.exists &&
-                result.vars.charge && result.vars.charge.exists &&
-                hasOperatorOutsideStrings(code, "*"))) {
-            updateHpBar(DUMMY_MAX, DUMMY_MAX, false);
-            battleState.enemyHp = DUMMY_MAX;
-          }
-        }
-        updateBattleFromVars(result.vars, { fromRun: true, showCharge: true });
-        // If charged strike vars present with *, preview charged damage on dummy
-        const v = result.vars;
-        if (v.base && v.base.exists && isNumberType(v.base.type) &&
-            v.charge && v.charge.exists && isNumberType(v.charge.type) &&
-            hasOperatorOutsideStrings(code, "*") &&
-            !(v.enemy_hp && v.enemy_hp.exists && v.damage && v.damage.exists)) {
-          const dealt = Number(v.base.value) * Number(v.charge.value);
-          updateBattleFromVars(v, {
-            forceRemaining: Math.max(0, DUMMY_MAX - dealt),
-            forceDamage: dealt,
-            charged: true,
-            showCharge: true
-          });
-        }
+        updateHpBar(DUMMY_MAX, DUMMY_MAX);
+        updateBattleFromVars(result.vars, { fromRun: true });
       }
     } catch (err) {
       setConsole('<span class="err">Python says: ' + escapeHtml(String(err.message || err)) + "</span>");
@@ -1974,10 +2068,14 @@ json.dumps(_out)
       last = text.replace(/^PythonError:\s*/i, "").trim();
       if (last.length > 240) last = last.slice(0, 240) + "…";
     }
+    if (/IndentationError|expected an indented block/i.test(text) || /IndentationError|expected an indented block/i.test(last)) {
+      last +=
+        "\n\nTip: lines under if / else need indentation (usually 4 spaces). Don’t forget the colon : at the end of the if line.";
+    }
     if (/'int' object is not callable|'float' object is not callable/i.test(text) ||
         /'int' object is not callable|'float' object is not callable/i.test(last)) {
       last +=
-        "\n\nUsually this means a name like print got turned into a number, or you wrote base charge instead of base * charge. Check for a missing * and that print still means print.";
+        "\n\nUsually this means a name like print got turned into a number, or you wrote damage multiplier instead of damage * multiplier. Check for a missing * and that print still means print.";
     }
     return last;
   }
@@ -1987,7 +2085,7 @@ json.dumps(_out)
   }
 
   function stdoutContains(stdout, piece) {
-    return String(stdout).indexOf(String(piece)) !== -1;
+    return String(stdout).toLowerCase().indexOf(String(piece).toLowerCase()) !== -1;
   }
 
   function stdoutShowsNumber(stdout, n) {
@@ -1996,18 +2094,28 @@ json.dumps(_out)
     return re.test(s);
   }
 
-  function printUsesName(code, ident) {
-    const stripped = code.replace(/(["'])(?:\\.|(?!\1).)*\1/g, '""');
-    const re = new RegExp("print\\s*\\([^)]*\\b" + ident + "\\b");
-    return re.test(stripped) || new RegExp("print\\s*\\(\\s*" + ident + "\\s*\\)").test(code);
+  function stripStrings(code) {
+    return String(code || "").replace(/(["'])(?:\\.|(?!\1).)*\1/g, '""');
+  }
+
+  function hasKeyword(code, kw) {
+    const stripped = stripStrings(code);
+    return new RegExp("\\b" + kw + "\\b").test(stripped);
   }
 
   function hasOperatorOutsideStrings(code, op) {
-    const stripped = code.replace(/(["'])(?:\\.|(?!\1).)*\1/g, '""');
-    if (op === "+") return /\+/.test(stripped);
+    const stripped = stripStrings(code);
+    if (op === "==") return /==/.test(stripped);
     if (op === "*") return /\*/.test(stripped);
+    if (op === "+") return /\+/.test(stripped);
     if (op === "-") return /-/.test(stripped);
     return stripped.indexOf(op) !== -1;
+  }
+
+  function printUsesName(code, ident) {
+    const stripped = stripStrings(code);
+    const re = new RegExp("print\\s*\\([^)]*\\b" + ident + "\\b");
+    return re.test(stripped) || new RegExp("print\\s*\\(\\s*" + ident + "\\s*\\)").test(code);
   }
 
   async function checkChallenge(index) {
@@ -2036,116 +2144,116 @@ json.dumps(_out)
       let html = formatRunConsole(result);
       if (!html) html = '<span class="muted">(No output — did you print?)</span>';
       setConsole(html);
-      updateBattleFromVars(result.vars, { fromRun: true });
+      updateBattleFromVars(result.vars, { fromRun: true, skipAnim: true });
 
       let ok = false;
       let tip = "";
-      const attack = result.vars.attack;
-      const enemyHp = result.vars.enemy_hp;
+      const myType = result.vars.my_type;
+      const enemyType = result.vars.enemy_type;
       const damage = result.vars.damage;
-      const base = result.vars.base;
-      const charge = result.vars.charge;
+      const multiplier = result.vars.multiplier;
+      const out = String(result.stdout || "");
 
       if (index === 0) {
-        if (!attack || !attack.exists) {
-          tip = "Create attack = 20 (a number, no quotes).";
-        } else if (!isNumberType(attack.type)) {
-          tip = "attack should be a number. Use attack = 20 (no quotes).";
-        } else if (Number(attack.value) !== 20) {
-          tip = "attack should equal 20 for this challenge.";
+        if (!myType || !myType.exists) {
+          tip = "Create my_type = \"Water\" (a string with quotes).";
+        } else if (myType.type !== "str") {
+          tip = "my_type should be a string. Use my_type = \"Water\".";
+        } else if (String(myType.value) !== "Water") {
+          tip = "my_type should equal \"Water\" for this challenge.";
+        } else if (!enemyType || !enemyType.exists) {
+          tip = "Also create enemy_type = \"Fire\".";
+        } else if (enemyType.type !== "str") {
+          tip = "enemy_type should be a string. Use enemy_type = \"Fire\".";
+        } else if (String(enemyType.value) !== "Fire") {
+          tip = "enemy_type should equal \"Fire\" for this challenge.";
+        } else if (!hasKeyword(code, "if")) {
+          tip = "Use an if statement to check the matchup.";
+        } else if (!hasOperatorOutsideStrings(code, "==")) {
+          tip = "Compare with == (two equals): if my_type == \"Water\" …";
         } else if (!result.usedPrint) {
-          tip = "Print it: print(attack)";
-        } else if (!printUsesName(code, "attack")) {
-          tip = "Print the variable: print(attack) — don’t only type print(20).";
-        } else if (!stdoutShowsNumber(result.stdout, 20)) {
-          tip = "Your print should show 20 so the ATK badge can light up.";
+          tip = "Print a SUPER advantage message inside the if block.";
+        } else if (!stdoutContains(out, "SUPER")) {
+          tip = "Your print should include the word SUPER (Water beats Fire!).";
+        } else if (!stdoutContains(out, "advantage")) {
+          tip = "Also include the word advantage in what you print.";
         } else {
           ok = true;
-          updateBattleFromVars(result.vars, {});
-          setBattleLog("Attack power 20 locked in!", "win");
+          updateBattleFromVars(result.vars, { forceEdge: "super" });
+          setBattleLog("SUPER advantage! Water beats Fire.", "win");
         }
       } else if (index === 1) {
-        if (!enemyHp || !enemyHp.exists) {
-          tip = "Create enemy_hp = 60 (a number, no quotes).";
-        } else if (!isNumberType(enemyHp.type)) {
-          tip = "enemy_hp should be a number. Use enemy_hp = 60.";
-        } else if (Number(enemyHp.value) !== 60) {
-          tip = "enemy_hp should equal 60 for this challenge.";
-        } else if (!damage || !damage.exists) {
-          tip = "Also create damage = 20.";
+        if (!damage || !damage.exists) {
+          tip = "Create damage = 20 (a number, no quotes).";
         } else if (!isNumberType(damage.type)) {
           tip = "damage should be a number. Use damage = 20.";
         } else if (Number(damage.value) !== 20) {
           tip = "damage should equal 20 for this challenge.";
+        } else if (!multiplier || !multiplier.exists) {
+          tip = "Also create multiplier = 2.";
+        } else if (!isNumberType(multiplier.type)) {
+          tip = "multiplier should be a number. Use multiplier = 2.";
+        } else if (Number(multiplier.value) !== 2) {
+          tip = "multiplier should equal 2 for this challenge.";
         } else if (!result.usedPrint) {
-          tip = "Print the remaining HP: print(enemy_hp - damage)";
-        } else if (!hasOperatorOutsideStrings(code, "-")) {
-          tip = "Use the - operator to subtract — don’t just print(40).";
+          tip = "Print the boosted hit: print(damage * multiplier)";
+        } else if (!hasOperatorOutsideStrings(code, "*")) {
+          tip = "Use the * operator to multiply — don’t just print(40).";
         } else if (!stdoutShowsNumber(result.stdout, 40)) {
-          tip = "Your print should show 40 (enemy_hp minus damage).";
+          tip = "Your print should show 40 (damage times multiplier).";
         } else {
-          const hasSubExpr =
-            /\benemy_hp\s*-\s*damage\b/.test(code) ||
-            /\bdamage\s*-\s*enemy_hp\b/.test(code) ||
-            /print\s*\([^)]*-/.test(code) ||
-            /\w+\s*=\s*[^\n]*-/.test(code);
-          // Reject print-only-40: require subtraction involving the vars somehow
+          const hasMulExpr =
+            /\bdamage\s*\*\s*multiplier\b/.test(code) ||
+            /\bmultiplier\s*\*\s*damage\b/.test(code) ||
+            /print\s*\([^)]*\*/.test(code) ||
+            /\w+\s*=\s*[^\n]*\*/.test(code);
           const printOnlyForty =
             /print\s*\(\s*40\s*\)/.test(code) &&
-            !/\benemy_hp\s*-/.test(code) &&
-            !/-\s*damage\b/.test(code);
-          if (printOnlyForty || !hasSubExpr) {
-            tip = "Subtract with -: print(enemy_hp - damage)";
+            !/\bdamage\s*\*/.test(code) &&
+            !/\*\s*multiplier\b/.test(code);
+          if (printOnlyForty || !hasMulExpr) {
+            tip = "Multiply with *: print(damage * multiplier)";
           } else {
             ok = true;
-            updateBattleFromVars(result.vars, {});
-            updateHpBar(40, 60, true);
-            showDamageFloat(20, false);
-            setBattleLog("Hit! 20 damage — dummy has 40 HP left.", "hit");
+            updateBattleFromVars(result.vars, { forceEdge: "super" });
+            updateHpBar(20, 60);
+            showDamageFloat(40, true);
+            setBattleLog("SUPER hit! 40 damage (20 × 2).", "win");
           }
         }
       } else if (index === 2) {
-        if (!base || !base.exists) {
-          tip = "Create base = 15 (a number, no quotes).";
-        } else if (!isNumberType(base.type)) {
-          tip = "base should be a number. Use base = 15.";
-        } else if (Number(base.value) !== 15) {
-          tip = "base should equal 15 for this challenge.";
-        } else if (!charge || !charge.exists) {
-          tip = "Also create charge = 2.";
-        } else if (!isNumberType(charge.type)) {
-          tip = "charge should be a number. Use charge = 2.";
-        } else if (Number(charge.value) !== 2) {
-          tip = "charge should equal 2 for this challenge.";
+        if (!myType || !myType.exists) {
+          tip = "Create my_type = \"Water\".";
+        } else if (myType.type !== "str" || String(myType.value) !== "Water") {
+          tip = "my_type should be the string \"Water\".";
+        } else if (!enemyType || !enemyType.exists) {
+          tip = "Also create enemy_type = \"Fire\".";
+        } else if (enemyType.type !== "str" || String(enemyType.value) !== "Fire") {
+          tip = "enemy_type should be the string \"Fire\".";
+        } else if (!hasKeyword(code, "if")) {
+          tip = "Use if for the SUPER branch.";
+        } else if (!hasKeyword(code, "else")) {
+          tip = "Add an else: branch that prints normal (even though Water vs Fire takes if).";
+        } else if (!hasOperatorOutsideStrings(code, "==")) {
+          tip = "Compare types with == inside your if condition.";
         } else if (!result.usedPrint) {
-          tip = "Print the charged hit: print(base * charge)";
-        } else if (!hasOperatorOutsideStrings(code, "*")) {
-          tip = "Use the * operator to multiply — don’t just print(30).";
-        } else if (!stdoutShowsNumber(result.stdout, 30)) {
-          tip = "Your print should show 30 (base times charge).";
+          tip = "Print SUPER in the if branch and normal in the else branch.";
+        } else if (!stdoutContains(out, "SUPER")) {
+          tip = "Water vs Fire should take the if branch — print something with SUPER.";
+        } else if (stdoutContains(out, "normal") && !stdoutContains(out, "SUPER")) {
+          tip = "You hit else only — fix the if condition so Water vs Fire is SUPER.";
         } else {
-          const hasMulExpr =
-            /\bbase\s*\*\s*charge\b/.test(code) ||
-            /\bcharge\s*\*\s*base\b/.test(code) ||
-            /print\s*\([^)]*\*/.test(code) ||
-            /\w+\s*=\s*[^\n]*\*/.test(code);
-          const printOnlyThirty =
-            /print\s*\(\s*30\s*\)/.test(code) &&
-            !/\bbase\s*\*/.test(code) &&
-            !/\*\s*charge\b/.test(code);
-          if (printOnlyThirty || !hasMulExpr) {
-            tip = "Multiply with *: print(base * charge)";
+          // Require else branch to mention normal in source (even if not printed this run)
+          const elseHasNormal = /\belse\s*:[\s\S]*normal/i.test(code);
+          const anyNormalInSrc = /normal/i.test(code);
+          if (!elseHasNormal && !anyNormalInSrc) {
+            tip = "In the else: branch, print a message that includes the word normal.";
+          } else if (stdoutContains(out, "normal") && !/\bSUPER\b/i.test(out)) {
+            tip = "Console should show SUPER for Water vs Fire (if branch), not only normal.";
           } else {
             ok = true;
-            updateBattleFromVars({}, {
-              forceRemaining: 30,
-              forceDamage: 30,
-              charged: true
-            });
-            // Actually 60-30=30 remaining after charged strike flourish preview
-            updateHpBar(30, 60, true);
-            showDamageFloat(30, true);
-            setBattleLog("Charged Power Strike for 30!", "win");
+            updateBattleFromVars(result.vars, { forceEdge: "super" });
+            setBattleLog("if branch wins — SUPER! else waits for a normal matchup.", "win");
           }
         }
       }
@@ -2172,8 +2280,10 @@ json.dumps(_out)
   }
 
   paintFighter();
-  updateHpBar(DUMMY_MAX, DUMMY_MAX, false);
-  editor.value = 'attack = 20\nprint(attack)\n';
+  paintEnemy("Fire");
+  updateHpBar(DUMMY_MAX, DUMMY_MAX);
+  setEdgeUI(null, null, null);
+  editor.value = 'my_type = "Water"\nenemy_type = "Fire"\nif my_type == "Water" and enemy_type == "Fire":\n    print("SUPER advantage!")\n';
 
   loadPyodideAsync();
 })();
