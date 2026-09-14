@@ -1317,47 +1317,47 @@
         Use <code>if</code> with <code>==</code> to check a matchup, and
         <code>else</code> when it’s only a normal hit.
       </p>
-      <div class="example-box" data-code="my_type = &quot;Water&quot;
-enemy_type = &quot;Fire&quot;
-if my_type == &quot;Water&quot; and enemy_type == &quot;Fire&quot;:
-    print(&quot;SUPER advantage!&quot;)">
+      <div class="example-box" data-code="my_type = &quot;Fire&quot;
+enemy_type = &quot;Electric&quot;
+if my_type == &quot;Fire&quot; and enemy_type == &quot;Electric&quot;:
+    print(&quot;Edge found!&quot;)">
         <div class="example-code">
-          <span class="comment"># Water vs Fire → type edge!</span><br>
-          my_type = <span class="str">"Water"</span><br>
-          enemy_type = <span class="str">"Fire"</span><br>
-          <span class="kw">if</span> my_type <span class="op">==</span> <span class="str">"Water"</span> <span class="kw">and</span> enemy_type <span class="op">==</span> <span class="str">"Fire"</span>:<br>
-          &nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">print</span>(<span class="str">"SUPER advantage!"</span>)<br>
-          <span class="out">→ SUPER advantage!</span>
+          <span class="comment"># Practice Fire vs Electric — Check uses Water vs Fire</span><br>
+          my_type = <span class="str">"Fire"</span><br>
+          enemy_type = <span class="str">"Electric"</span><br>
+          <span class="kw">if</span> my_type <span class="op">==</span> <span class="str">"Fire"</span> <span class="kw">and</span> enemy_type <span class="op">==</span> <span class="str">"Electric"</span>:<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">print</span>(<span class="str">"Edge found!"</span>)<br>
+          <span class="out">→ Edge found!</span>
         </div>
         <button type="button" class="try-example">Try this ▸</button>
       </div>
-      <div class="example-box" data-code="damage = 20
-multiplier = 2
+      <div class="example-box" data-code="damage = 15
+multiplier = 3
 print(damage * multiplier)">
         <div class="example-code">
-          <span class="comment"># Advantage multiplies damage</span><br>
-          damage = <span class="num">20</span><br>
-          multiplier = <span class="num">2</span><br>
+          <span class="comment"># Practice multiply — Check uses 20 × 2</span><br>
+          damage = <span class="num">15</span><br>
+          multiplier = <span class="num">3</span><br>
           <span class="fn">print</span>(damage <span class="op">*</span> multiplier)<br>
-          <span class="out">→ 40</span>
+          <span class="out">→ 45</span>
         </div>
         <button type="button" class="try-example">Try this ▸</button>
       </div>
-      <div class="example-box" data-code="my_type = &quot;Water&quot;
+      <div class="example-box" data-code="my_type = &quot;Electric&quot;
 enemy_type = &quot;Fire&quot;
-if my_type == &quot;Water&quot; and enemy_type == &quot;Fire&quot;:
+if my_type == &quot;Electric&quot; and enemy_type == &quot;Water&quot;:
     print(&quot;SUPER&quot;)
 else:
     print(&quot;normal&quot;)">
         <div class="example-code">
-          <span class="comment"># if / else: SUPER vs normal</span><br>
-          my_type = <span class="str">"Water"</span><br>
+          <span class="comment"># Practice else path — Electric vs Fire is normal</span><br>
+          my_type = <span class="str">"Electric"</span><br>
           enemy_type = <span class="str">"Fire"</span><br>
-          <span class="kw">if</span> my_type <span class="op">==</span> <span class="str">"Water"</span> <span class="kw">and</span> enemy_type <span class="op">==</span> <span class="str">"Fire"</span>:<br>
+          <span class="kw">if</span> my_type <span class="op">==</span> <span class="str">"Electric"</span> <span class="kw">and</span> enemy_type <span class="op">==</span> <span class="str">"Water"</span>:<br>
           &nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">print</span>(<span class="str">"SUPER"</span>)<br>
           <span class="kw">else</span>:<br>
           &nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">print</span>(<span class="str">"normal"</span>)<br>
-          <span class="out">→ SUPER &nbsp;<span class="comment">(if branch — Water beats Fire)</span></span>
+          <span class="out">→ normal &nbsp;<span class="comment">(else — no edge here)</span></span>
         </div>
         <button type="button" class="try-example">Try this ▸</button>
       </div>
@@ -1442,7 +1442,7 @@ else:
       <li><strong>*</strong> multiplies damage when you have the edge: <code style="color:var(--gold)">damage * multiplier</code>.</li>
       <li><strong>else</strong> covers the “normal” path when there is no advantage.</li>
     </ul>
-    <p style="margin-top:1.25rem;font-size:1.05rem;">More PyKémon battles ahead. Rest up, trainer! ⚡</p>
+    <p style="margin-top:1.25rem;font-size:1.05rem;">Ready for <strong>Draw Loop</strong>? <a href="level-04-draw-loop.html" style="color:var(--gold-bright)">Level 4 →</a></p>
   </section>
 
   <p class="footer-note"><a href="../index.html">← PyQuest &amp; PyKémon hub</a> · Real Python in your browser via Pyodide · No account needed</p>
@@ -2283,7 +2283,7 @@ json.dumps(_out)
   paintEnemy("Fire");
   updateHpBar(DUMMY_MAX, DUMMY_MAX);
   setEdgeUI(null, null, null);
-  editor.value = 'my_type = "Water"\nenemy_type = "Fire"\nif my_type == "Water" and enemy_type == "Fire":\n    print("SUPER advantage!")\n';
+  editor.value = '# Challenge 1: compare Water vs Fire with if\n';
 
   loadPyodideAsync();
 })();

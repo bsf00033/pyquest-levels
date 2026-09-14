@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>PyKémon — Level 2: Power Strike</title>
+<title>PyKémon — Level 6: Battle Moves</title>
 <style>
   :root {
     --cave-deep: #0b0e14;
@@ -1102,6 +1102,100 @@
       radial-gradient(2px 2px at 25% 80%, var(--sea), transparent);
     animation: twinkle 1.2s ease-in-out infinite alternate;
   }
+
+  .type-edge-banner {
+    text-align: center;
+    font-weight: 800;
+    font-size: .95rem;
+    letter-spacing: .04em;
+    padding: .45rem .6rem;
+    margin: .35rem 0 .55rem;
+    border-radius: 10px;
+    background: rgba(240,193,75,.08);
+    border: 1px dashed var(--cave-border);
+    color: var(--fog-dim);
+  }
+  .type-edge-banner.super {
+    background: rgba(46,204,113,.14);
+    border-color: var(--mint);
+    color: var(--mint);
+    box-shadow: 0 0 18px rgba(46,204,113,.2);
+  }
+  .type-edge-banner.normal {
+    background: rgba(139,148,158,.1);
+    border-color: var(--cave-border);
+    color: var(--fog);
+  }
+  .matchup-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .45rem;
+    justify-content: center;
+    margin: .55rem 0 .25rem;
+  }
+  .matchup-chip {
+    font-family: var(--mono);
+    font-size: .78rem;
+    font-weight: 700;
+    padding: .28rem .65rem;
+    border-radius: 999px;
+    background: var(--cave-deep);
+    border: 1px solid var(--cave-border);
+    color: var(--gold-bright);
+  }
+  .matchup-chip.water { color: #7dd3fc; border-color: rgba(56,189,248,.45); }
+  .matchup-chip.fire { color: #ffb347; border-color: rgba(255,107,53,.45); }
+  .matchup-chip.electric { color: var(--electric); border-color: rgba(255,229,102,.45); }
+  .enemy-type-badge {
+    display: inline-block;
+    font-size: .68rem;
+    font-weight: 800;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    padding: .15rem .45rem;
+    border-radius: 999px;
+    background: linear-gradient(180deg, #ff8a3d, #c2410c);
+    color: #fff;
+    margin-bottom: .25rem;
+  }
+
+  .draw-log {
+    max-height: 160px; overflow-y: auto; font-family: var(--mono); font-size: .85rem;
+    background: var(--cave-deep); border: 1px solid var(--cave-border); border-radius: 10px;
+    padding: .65rem .8rem; margin-top: .5rem; color: var(--fog);
+  }
+  .draw-log .line { margin: .2rem 0; }
+  .draw-log .line.new { color: var(--gold-bright); animation: glow-in .4s ease; }
+  .hand-panel {
+    display: flex; flex-wrap: wrap; gap: .45rem; justify-content: center; margin-top: .55rem; min-height: 3rem;
+  }
+  .hand-card {
+    background: linear-gradient(180deg, #243044, #1a2233); border: 1px solid var(--gold-dim);
+    border-radius: 10px; padding: .55rem .7rem; font-weight: 700; font-size: .82rem; color: var(--gold-bright);
+    min-width: 4.5rem; text-align: center;
+  }
+  .hand-card.empty { opacity: .4; border-style: dashed; color: var(--fog-dim); }
+  .status-badge {
+    display: inline-block; font-weight: 800; letter-spacing: .06em; text-transform: uppercase;
+    padding: .35rem .85rem; border-radius: 999px; font-size: .85rem; margin: .4rem 0;
+    background: var(--cave-deep); border: 1px solid var(--cave-border); color: var(--fog-dim);
+  }
+  .status-badge.burn { background: rgba(231,76,60,.18); border-color: var(--rose); color: #ff8a7a; }
+  .status-badge.shield { background: rgba(61,156,240,.18); border-color: var(--sea); color: #7dd3fc; }
+  .status-badge.ok { background: rgba(46,204,113,.16); border-color: var(--mint); color: var(--mint); }
+  .status-badge.stun { background: rgba(240,193,75,.14); border-color: var(--gold-dim); color: var(--gold); }
+  .duel-btns { display: flex; flex-wrap: wrap; gap: .5rem; justify-content: center; margin: .65rem 0 .35rem; }
+  .btn-atk { background: linear-gradient(180deg, #ff8a3d, #c2410c); color: #fff; box-shadow: 0 4px 16px rgba(255,107,53,.3); }
+  .btn-super { background: linear-gradient(180deg, #48d68a, #1e9b55); color: #041a0c; }
+  .btn-heal { background: linear-gradient(180deg, #5aadf5, #2563eb); color: #041018; }
+  .coach-tip {
+    display: none; margin-top: .55rem; padding: .65rem .85rem; border-radius: 10px;
+    background: rgba(240,193,75,.1); border: 1px solid var(--gold-dim); color: var(--gold-bright); font-size: .9rem;
+  }
+  .coach-tip.visible { display: block; }
+  .hp-pair { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-top: .5rem; }
+  .hp-pair .side { flex: 1; min-width: 120px; text-align: center; }
+
 </style>
 </head>
 <body>
@@ -1110,20 +1204,15 @@
   <div class="cave-sparkles" aria-hidden="true"></div>
   <img class="title-logo" src="art/logo.svg" alt="PyKémon" />
   <div class="brand">Original arena · not Nintendo</div>
-  <h1>Level 2: Power Strike</h1>
-  <div class="story">
-    Your starter has a card — now teach them to <strong>hit</strong>!
-    Numbers power every strike: set <strong>attack</strong>, subtract from
-    <strong>enemy_hp</strong>, and multiply for a charged blow.
-    Math in Python = damage in the arena.
-  </div>
-  <a class="btn btn-gold" id="btn-start" href="#lesson">Enter Training ⚡</a>
+  <h1>Level 6: Battle Moves</h1>
+  <div class="story">Teach reusable <strong>moves</strong> with <code>def</code>. Pass parameters, <strong>return</strong> damage or remaining HP, and watch ATK update!</div>
+  <a class="btn btn-gold" id="btn-start" href="#lesson">Enter Arena 🥊</a>
   <p class="ipad-tip">On iPad: if this button does nothing, open the lesson from the Safari web link (Files preview often blocks code).</p>
 </section>
 
 <main id="lesson">
   <div class="topbar">
-    <h2><span aria-hidden="true">⚡</span> Level 2 — Power Strike</h2>
+    <h2><span aria-hidden="true">🥊</span> Level 6 — Battle Moves</h2>
     <div class="topbar-actions">
       <button type="button" class="btn btn-jump-code" id="btn-jump-code" title="Jump to your code editor">✏️ Your code</button>
       <div class="status-pill loading" id="py-status" role="status">
@@ -1140,8 +1229,7 @@
   </div>
 
   <p class="code-tip">
-    <strong>Tip:</strong> Type Python in the big editor below, then tap <strong>Run</strong>.
-    Watch your fighter’s ATK and the dummy’s HP update from your numbers.
+    <strong>Tip:</strong> Type Python in the editor, tap <strong>Run</strong>, and watch ATK / heal react to your functions.
   </p>
 
   <div class="mobile-code-bar">
@@ -1169,146 +1257,100 @@
 
     <aside class="arena-col">
       <section class="panel arena-panel">
-        <div class="arena-title">Live training battle</div>
+        <div class="arena-title">Live preview</div>
         <details class="art-drawer" id="art-drawer">
           <summary>
             <span>
-              <span class="art-drawer-label-closed">🃏 Show cards</span>
-              <span class="art-drawer-label-open">🃏 Hide cards</span>
+              <span class="art-drawer-label-closed">🃏 Show arena</span>
+              <span class="art-drawer-label-open">🃏 Hide arena</span>
             </span>
-            <span class="art-compact" id="art-compact">
-              <span class="dim">ATK</span> <span id="compact-atk">--</span>
-              · <span class="dim">HP</span> <span id="compact-hp">60 / 60</span>
-            </span>
+            <span class="art-compact" id="art-compact"><span class="dim">ATK</span> <span id="compact-atk">--</span></span>
           </summary>
           <div class="battle-stage" id="battle-stage">
             <div class="confetti" aria-hidden="true"></div>
-
-            <div class="fighter">
-              <div class="fighter-label">You</div>
-              <article class="pk-mini" id="player-card" data-type="Electric">
+            
+            <div class="fighter" style="margin:0 auto;">
+              <article class="pk-mini" data-type="Electric" id="player-card">
                 <div class="pk-mini-inner">
                   <header class="pk-mini-top">
                     <div class="atk-badge"><span class="atk-label">ATK</span><span class="atk-val" id="atk-val">--</span></div>
-                    <div class="hp-mini">HP 60</div>
+                    <div class="hp-mini" id="heal-val">HP --</div>
                   </header>
-                  <div class="pk-mini-art">
-                    <img id="player-art" src="art/sparkybolt.svg" alt="Sparkybolt" />
-                  </div>
-                  <div class="pk-mini-name" id="player-name">Sparkybolt</div>
+                  <div class="pk-mini-art"><img src="art/sparkybolt.svg" alt="Sparkybolt" /></div>
+                  <div class="pk-mini-name">Sparkybolt</div>
                 </div>
               </article>
             </div>
+            <div class="battle-log" id="battle-log">Define moves with def — ATK / heal update on Run.</div>
 
-            <div class="vs-badge">VS</div>
-
-            <div class="fighter dummy">
-              <div class="fighter-label">Training dummy</div>
-              <div class="dummy-card" id="dummy-card">
-                <div class="dummy-inner">
-                  <div class="dummy-face" id="dummy-face">
-                    🎯
-                    <span class="dmg-float" id="dmg-float"></span>
-                  </div>
-                  <div class="dummy-name">Practice Bot</div>
-                  <div class="hp-bar-wrap" title="Enemy HP">
-                    <div class="hp-bar-fill" id="hp-fill"></div>
-                  </div>
-                  <div class="hp-bar-text">
-                    <span>HP</span>
-                    <span id="hp-text">60 / 60</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="battle-log" id="battle-log">Set attack power to begin training.</div>
           </div>
         </details>
-
-        <div class="arena-title" style="margin-top:1rem;">Your fighter</div>
-        <div class="starter-picker" id="starter-picker">
-          <button type="button" class="starter-btn picked" data-starter="Sparkybolt" data-ptype="Electric" data-art="art/sparkybolt.svg">
-            <img src="art/sparkybolt.svg" alt="" />
-            <strong>Sparkybolt</strong>
-          </button>
-          <button type="button" class="starter-btn" data-starter="Emberpup" data-ptype="Fire" data-art="art/emberpup.svg">
-            <img src="art/emberpup.svg" alt="" />
-            <strong>Emberpup</strong>
-          </button>
-          <button type="button" class="starter-btn" data-starter="Aquafin" data-ptype="Water" data-art="art/aquafin.svg">
-            <img src="art/aquafin.svg" alt="" />
-            <strong>Aquafin</strong>
-          </button>
-        </div>
       </section>
     </aside>
 
     <section class="panel lesson-text lesson-details">
-      <h3>📜 Quick Lesson: Numbers &amp; attack math</h3>
+
+      <h3>📜 Quick Lesson: def, parameters, return</h3>
       <p>
-        Attack damage is a <strong>number</strong> — no quotes.
-        You can <strong>subtract</strong> to find remaining HP and
-        <strong>multiply</strong> for a charged strike.
+        A <strong>function</strong> is a reusable move. Define it with <code>def</code>,
+        pass values in as <strong>parameters</strong>, and send a result back with <code>return</code>.
       </p>
-      <div class="example-box" data-code="attack = 12
-print(attack)">
+      <div class="example-box" data-code='def cheer(who):
+    print(who, "go!")
+cheer("Mossleap")'>
         <div class="example-code">
-          <span class="comment"># Practice ATK — Check will ask for 20</span><br>
-          attack = <span class="num">12</span><br>
-          <span class="fn">print</span>(attack)<br>
-          <span class="out">→ 12</span>
+          <span class="comment"># Practice def — Check uses shout(name)</span><br>
+          <span class="kw">def</span> <span class="fn">cheer</span>(who):<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">print</span>(who, <span class="str">"go!"</span>)<br>
+          cheer(<span class="str">"Mossleap"</span>)<br>
+          <span class="out">→ Mossleap go!</span>
         </div>
         <button type="button" class="try-example">Try this ▸</button>
       </div>
-      <div class="example-box" data-code="enemy_hp = 50
-damage = 18
-print(enemy_hp - damage)">
+      <div class="example-box" data-code="def boost(n):
+    return n + 3
+print(boost(10))">
         <div class="example-code">
-          <span class="comment"># Practice subtract — Check uses 60 and 20</span><br>
-          enemy_hp = <span class="num">50</span><br>
-          damage = <span class="num">18</span><br>
-          <span class="fn">print</span>(enemy_hp <span class="op">-</span> damage)<br>
-          <span class="out">→ 32</span>
+          <span class="comment"># Practice return +3 — Check uses +5</span><br>
+          <span class="kw">def</span> <span class="fn">boost</span>(n):<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">return</span> n <span class="op">+</span> <span class="num">3</span><br>
+          <span class="fn">print</span>(boost(<span class="num">10</span>))<br>
+          <span class="out">→ 13</span>
         </div>
         <button type="button" class="try-example">Try this ▸</button>
       </div>
-      <div class="example-box" data-code="base = 10
-charge = 3
-print(base * charge)">
+      <div class="example-box" data-code="def leftover(hp, hit):
+    return hp - hit
+print(leftover(40, 12))">
         <div class="example-code">
-          <span class="comment"># Practice multiply — Check uses base=15, charge=2</span><br>
-          base = <span class="num">10</span><br>
-          charge = <span class="num">3</span><br>
-          <span class="fn">print</span>(base <span class="op">*</span> charge)<br>
-          <span class="out">→ 30</span>
+          <span class="comment"># Practice two params — Check uses hit(hp, dmg)</span><br>
+          <span class="kw">def</span> <span class="fn">leftover</span>(hp, hit):<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">return</span> hp <span class="op">-</span> hit<br>
+          <span class="fn">print</span>(leftover(<span class="num">40</span>, <span class="num">12</span>))<br>
+          <span class="out">→ 28</span>
         </div>
         <button type="button" class="try-example">Try this ▸</button>
       </div>
       <div class="math-row">
-        <div class="math-chip">− <span>subtract</span></div>
-        <div class="math-chip">* <span>multiply</span></div>
-        <div class="math-chip">+ <span>add</span></div>
+        <div class="math-chip">def <span>define a move</span></div>
+        <div class="math-chip">params <span>inputs</span></div>
+        <div class="math-chip">return <span>send a result</span></div>
       </div>
-      <p style="margin-top:.85rem;">Run your code and watch the training dummy take hits. Real Python. Real damage. ✨</p>
+
     </section>
   </div>
 
   <section class="panel">
     <h3>⚔️ Challenges</h3>
     <p style="color:var(--fog-dim);margin-bottom:1rem;font-size:.95rem;">
-      Write code in the editor, hit <strong>Run</strong> to update the battle, then <strong>Check</strong> each challenge.
+      Write code in the editor, hit <strong>Run</strong> to update the preview, then <strong>Check</strong> each challenge.
       Keep adding lines — you can reuse the same code as you go.
     </p>
-
     <div class="challenge" id="ch-0" data-challenge="0">
       <div class="challenge-header">
-        <div class="challenge-title"><span class="stars empty" id="stars-0">☆</span> Challenge 1 — Set attack power</div>
+        <div class="challenge-title"><span class="stars empty" id="stars-0">☆</span> Challenge 1 — Battle cry</div>
       </div>
-      <p class="challenge-desc">
-        Create <code>attack = 20</code> (the number twenty, no quotes) and
-        <code>print(attack)</code>. Your card’s ATK badge will light up!
-      </p>
+      <p class="challenge-desc">Define <code>def shout(name):</code> that prints a battle cry including the name, then <strong>call</strong> it once. Require <code>def</code> in your source.</p>
       <div class="toolbar">
         <button type="button" class="btn btn-check btn-sm" data-check="0" disabled>Check</button>
         <button type="button" class="btn btn-ghost btn-sm" data-hint="0">Hint</button>
@@ -1316,16 +1358,11 @@ print(base * charge)">
       <div class="hint-box" id="hint-0"></div>
       <div class="feedback" id="fb-0"></div>
     </div>
-
     <div class="challenge" id="ch-1" data-challenge="1">
       <div class="challenge-header">
-        <div class="challenge-title"><span class="stars empty" id="stars-1">☆</span> Challenge 2 — Deal damage</div>
+        <div class="challenge-title"><span class="stars empty" id="stars-1">☆</span> Challenge 2 — Power strike</div>
       </div>
-      <p class="challenge-desc">
-        Create <code>enemy_hp = 60</code> and <code>damage = 20</code>, then print the remaining HP with
-        subtraction: <code>print(enemy_hp - damage)</code> → console shows <strong>40</strong>.
-        You must use the <code>-</code> operator (printing 40 alone won’t pass). Watch the dummy’s HP bar drop!
-      </p>
+      <p class="challenge-desc">Define <code>def strike(dmg):</code> that <code>return</code>s <code>dmg + 5</code>. Print the result of calling it (e.g. with 10 → <strong>15</strong>). Require <code>return</code>.</p>
       <div class="toolbar">
         <button type="button" class="btn btn-check btn-sm" data-check="1" disabled>Check</button>
         <button type="button" class="btn btn-ghost btn-sm" data-hint="1">Hint</button>
@@ -1333,16 +1370,11 @@ print(base * charge)">
       <div class="hint-box" id="hint-1"></div>
       <div class="feedback" id="fb-1"></div>
     </div>
-
     <div class="challenge" id="ch-2" data-challenge="2">
       <div class="challenge-header">
-        <div class="challenge-title"><span class="stars empty" id="stars-2">☆</span> Challenge 3 — Charged strike</div>
+        <div class="challenge-title"><span class="stars empty" id="stars-2">☆</span> Challenge 3 — Two-parameter hit</div>
       </div>
-      <p class="challenge-desc">
-        Create <code>base = 15</code> and <code>charge = 2</code>, then print a charged hit:
-        <code>print(base * charge)</code> → <strong>30</strong>.
-        Require the <code>*</code> operator — that’s a Power Strike!
-      </p>
+      <p class="challenge-desc">Define <code>def hit(hp, dmg):</code> that <code>return</code>s <code>hp - dmg</code>. Print remaining HP from a call (e.g. hit(50, 12) → <strong>38</strong>). Require two parameters.</p>
       <div class="toolbar">
         <button type="button" class="btn btn-check btn-sm" data-check="2" disabled>Check</button>
         <button type="button" class="btn btn-ghost btn-sm" data-hint="2">Hint</button>
@@ -1350,23 +1382,25 @@ print(base * charge)">
       <div class="hint-box" id="hint-2"></div>
       <div class="feedback" id="fb-2"></div>
     </div>
+
   </section>
 
   <section class="panel" id="recap">
-    <h3>⭐ Power Strike learned!</h3>
-    <p style="font-size:1.15rem;color:var(--gold-bright);">The training dummy is toast — your math hits hard!</p>
+
+    <h3>⭐ Battle Moves learned!</h3>
+    <p style="font-size:1.15rem;color:var(--gold-bright);">Your moves are functions — call them anytime!</p>
     <p style="margin-top:.5rem;color:var(--fog);">What you learned:</p>
     <ul>
-      <li><strong>attack</strong> / <strong>damage</strong> are numbers — they power every strike.</li>
-      <li><strong>−</strong> subtracts: <code style="color:var(--gold)">enemy_hp - damage</code> finds remaining HP.</li>
-      <li><strong>*</strong> multiplies: <code style="color:var(--gold)">base * charge</code> doubles a charged hit.</li>
+      <li><strong>def</strong> names a reusable move; indent the body.</li>
+      <li><strong>Parameters</strong> take inputs like <code>dmg</code> or <code>hp</code>.</li>
+      <li><strong>return</strong> sends a value back to the caller.</li>
     </ul>
-    <p style="margin-top:1.25rem;font-size:1.05rem;">Ready for <strong>Type Edge</strong>? <a href="level-03-type-edge.html" style="color:var(--gold-bright)">Level 3 →</a></p>
+
+    <p style="margin-top:1.25rem;font-size:1.05rem;">Next: <strong>status effects</strong> with elif. <a href="level-07-status-effects.html" style="color:var(--gold-bright)">Level 7 →</a></p>
   </section>
 
   <p class="footer-note"><a href="../index.html">← PyQuest &amp; PyKémon hub</a> · Real Python in your browser via Pyodide · No account needed</p>
 </main>
-
 <script>
 (function () {
   "use strict";
@@ -1381,15 +1415,6 @@ print(base * charge)">
   const pyStatus = document.getElementById("py-status");
   const pyStatusText = document.getElementById("py-status-text");
   const recap = document.getElementById("recap");
-  const battleStage = document.getElementById("battle-stage");
-  const playerCard = document.getElementById("player-card");
-  const dummyCard = document.getElementById("dummy-card");
-  const dummyFace = document.getElementById("dummy-face");
-  const dmgFloat = document.getElementById("dmg-float");
-  const hpFill = document.getElementById("hp-fill");
-  const hpText = document.getElementById("hp-text");
-  const battleLog = document.getElementById("battle-log");
-  const atkVal = document.getElementById("atk-val");
   const artDrawer = document.getElementById("art-drawer");
 
   (function syncArtDrawer() {
@@ -1404,268 +1429,48 @@ print(base * charge)">
     else if (mq.addListener) mq.addListener(apply);
   })();
 
-  const DUMMY_MAX = 60;
-
   let pyodide = null;
   let pyReady = false;
   let pyLoading = null;
   const passed = [false, false, false];
   const hintIndex = [0, 0, 0];
-  let pickedStarter = {
-    name: "Sparkybolt",
-    ptype: "Electric",
-    art: "art/sparkybolt.svg"
-  };
-  let battleState = {
-    attack: null,
-    enemyHp: DUMMY_MAX,
-    lastDamage: 0,
-    charged: false
-  };
 
-  const HINTS = [
-    [
-      "Numbers don’t need quotes: attack = 20",
-      "Print the variable: print(attack) — not just the number 20 by itself.",
-      "Both lines matter — create attack, then print(attack)."
-    ],
-    [
-      "Set both boxes: enemy_hp = 60 and damage = 20",
-      "Subtract with a minus sign: print(enemy_hp - damage)",
-      "Printing 40 alone won’t pass — the - must appear in your code!"
-    ],
-    [
-      "base = 15 and charge = 2 (numbers, no quotes).",
-      "Multiply with *: print(base * charge)",
-      "The * must appear in your source — printing 30 alone won’t pass."
-    ]
-  ];
-
-  const WIN_MESSAGES = [
-    "Attack power locked! ATK badge glows. ⭐",
-    "Hit landed! Dummy HP drops to 40. ⭐⭐",
-    "Charged strike! Power Strike unlocked! ⭐⭐⭐"
-  ];
-
-  const WIPE_VARS = [
-    "attack", "damage", "enemy_hp", "base", "charge",
-    "hp", "name", "ptype", "atk", "power", "remaining"
-  ];
-
-  const INSPECT_NAMES = [
-    "attack", "damage", "enemy_hp", "base", "charge"
-  ];
-
-  function setConsole(html) {
-    consoleEl.innerHTML = html;
-  }
-
+  function setConsole(html) { consoleEl.innerHTML = html; }
   function setStatus(state, text) {
     pyStatus.className = "status-pill " + state;
     pyStatusText.textContent = text;
   }
-
   function setButtonsEnabled(on) {
     btnRun.disabled = !on;
-    document.querySelectorAll("[data-check]").forEach(function (b) {
-      b.disabled = !on;
-    });
+    document.querySelectorAll("[data-check]").forEach(function (b) { b.disabled = !on; });
   }
-
-  function setBattleLog(text, cls) {
-    battleLog.className = "battle-log" + (cls ? " " + cls : "");
-    battleLog.textContent = text;
-  }
-
-  function updateHpBar(current, maxHp, animate) {
-    const max = maxHp || DUMMY_MAX;
-    const cur = Math.max(0, Math.min(max, Number(current)));
-    const pct = (cur / max) * 100;
-    hpFill.style.width = pct + "%";
-    hpFill.classList.remove("mid", "low");
-    if (pct <= 35) hpFill.classList.add("low");
-    else if (pct <= 65) hpFill.classList.add("mid");
-    hpText.textContent = cur + " / " + max;
-    var cHp = document.getElementById("compact-hp");
-    if (cHp) cHp.textContent = cur + " / " + max;
-    dummyCard.classList.toggle("ko", cur <= 0);
-    dummyFace.classList.toggle("woozy", cur < max && cur > 0);
-    var face = "🎯";
-    if (cur <= 0) face = "💥";
-    else if (cur < max) face = "😵";
-    dummyFace.innerHTML = face + '<span class="dmg-float" id="dmg-float"></span>';
-  }
-
-  function showDamageFloat(amount, charged) {
-    const el = document.getElementById("dmg-float") || dmgFloat;
-    if (!el) return;
-    el.textContent = "-" + amount;
-    el.className = "dmg-float show" + (charged ? " charge" : "");
-    dummyCard.classList.remove("hit");
-    void dummyCard.offsetWidth;
-    dummyCard.classList.add("hit");
-    playerCard.classList.remove("strike");
-    void playerCard.offsetWidth;
-    playerCard.classList.add("strike");
-    setTimeout(function () {
-      el.classList.remove("show", "charge");
-    }, 900);
-  }
-
-  function paintFighter() {
-    document.getElementById("player-name").textContent = pickedStarter.name;
-    document.getElementById("player-art").src = pickedStarter.art;
-    document.getElementById("player-art").alt = pickedStarter.name;
-    playerCard.setAttribute("data-type", pickedStarter.ptype);
-  }
-
-  function updateBattleFromVars(vars, opts) {
-    opts = opts || {};
-    let attack = null;
-    let enemyHp = null;
-    let damage = null;
-    let base = null;
-    let charge = null;
-
-    if (vars && vars.attack && vars.attack.exists && isNumberType(vars.attack.type)) {
-      attack = Number(vars.attack.value);
-    }
-    if (vars && vars.enemy_hp && vars.enemy_hp.exists && isNumberType(vars.enemy_hp.type)) {
-      enemyHp = Number(vars.enemy_hp.value);
-    }
-    if (vars && vars.damage && vars.damage.exists && isNumberType(vars.damage.type)) {
-      damage = Number(vars.damage.value);
-    }
-    if (vars && vars.base && vars.base.exists && isNumberType(vars.base.type)) {
-      base = Number(vars.base.value);
-    }
-    if (vars && vars.charge && vars.charge.exists && isNumberType(vars.charge.type)) {
-      charge = Number(vars.charge.value);
-    }
-
-    if (attack !== null) {
-      atkVal.textContent = String(attack);
-      battleState.attack = attack;
-      var cAtk = document.getElementById("compact-atk");
-      if (cAtk) cAtk.textContent = String(attack);
-    } else if (opts.resetAtk) {
-      atkVal.textContent = "--";
-      battleState.attack = null;
-      var cAtk2 = document.getElementById("compact-atk");
-      if (cAtk2) cAtk2.textContent = "--";
-    }
-
-    let remaining = DUMMY_MAX;
-    let dealt = 0;
-    let charged = false;
-
-    if (enemyHp !== null && damage !== null) {
-      remaining = enemyHp - damage;
-      dealt = damage;
-    } else if (enemyHp !== null && attack !== null && damage === null) {
-      remaining = enemyHp - attack;
-      dealt = attack;
-    } else if (opts.forceRemaining != null) {
-      remaining = opts.forceRemaining;
-      dealt = opts.forceDamage || 0;
-      charged = !!opts.charged;
-    } else if (base !== null && charge !== null && opts.showCharge) {
-      dealt = base * charge;
-      remaining = Math.max(0, DUMMY_MAX - dealt);
-      charged = true;
-    } else if (attack !== null && opts.fromRun) {
-      // show attack ready but keep full HP until damage math exists
-      remaining = battleState.enemyHp < DUMMY_MAX && (enemyHp !== null || damage !== null)
-        ? battleState.enemyHp
-        : DUMMY_MAX;
-    }
-
-    if (enemyHp !== null && damage !== null) {
-      battleState.enemyHp = remaining;
-      battleState.lastDamage = dealt;
-      updateHpBar(remaining, enemyHp > 0 ? enemyHp : DUMMY_MAX, true);
-      if (dealt > 0 && !opts.skipAnim) {
-        showDamageFloat(dealt, false);
-        setBattleLog("Hit! " + dealt + " damage — dummy has " + remaining + " HP left.", "hit");
-      }
-    } else if (opts.forceRemaining != null) {
-      battleState.enemyHp = remaining;
-      battleState.lastDamage = dealt;
-      updateHpBar(remaining, DUMMY_MAX, true);
-      if (dealt > 0 && !opts.skipAnim) {
-        showDamageFloat(dealt, charged);
-        setBattleLog(
-          charged
-            ? "Charged Power Strike for " + dealt + "!"
-            : "Hit! " + dealt + " damage.",
-          charged ? "win" : "hit"
-        );
-      }
-    } else if (attack !== null) {
-      setBattleLog("Attack power " + attack + " ready. Subtract damage next!", "");
-    }
-  }
-
-  function victoryFlourish() {
-    battleStage.classList.add("victory");
-    dummyCard.classList.remove("flourish");
-    void dummyCard.offsetWidth;
-    dummyCard.classList.add("flourish");
-    updateHpBar(0, DUMMY_MAX, true);
-    dummyFace.innerHTML = '💫<span class="dmg-float" id="dmg-float"></span>';
-    showDamageFloat(30, true);
-    setBattleLog("Power Strike learned! Practice Bot is out! ⭐", "win");
-  }
-
   function updateProgress() {
     for (let i = 0; i < 3; i++) {
-      document.getElementById("prog-" + i).classList.toggle("done", passed[i]);
+      const el = document.getElementById("prog-" + i);
+      if (el) el.classList.toggle("done", passed[i]);
     }
     if (passed.every(Boolean)) {
-      victoryFlourish();
+      if (typeof onAllPassed === "function") onAllPassed();
       recap.classList.add("visible");
       recap.scrollIntoView({ behavior: "smooth", block: "nearest" });
     }
   }
-
-  document.querySelectorAll(".starter-btn").forEach(function (btn) {
-    btn.addEventListener("click", function () {
-      document.querySelectorAll(".starter-btn").forEach(function (b) { b.classList.remove("picked"); });
-      btn.classList.add("picked");
-      pickedStarter = {
-        name: btn.getAttribute("data-starter"),
-        ptype: btn.getAttribute("data-ptype"),
-        art: btn.getAttribute("data-art")
-      };
-      paintFighter();
-    });
-  });
-
-
   function focusCodeEditor() {
     try {
       const panel = document.getElementById("code-panel") || editor;
       panel.scrollIntoView({ behavior: "smooth", block: "start" });
     } catch (_) {}
-    try {
-      editor.focus({ preventScroll: true });
-    } catch (_) {
-      try { editor.focus(); } catch (_) {}
-    }
+    try { editor.focus({ preventScroll: true }); }
+    catch (_) { try { editor.focus(); } catch (_) {} }
   }
-
   function loadExampleIntoEditor(code) {
     if (!code) return;
     editor.value = code.replace(/\r\n/g, "\n");
     focusCodeEditor();
   }
-
   document.querySelectorAll("#btn-jump-code, [data-jump-code]").forEach(function (btn) {
-    btn.addEventListener("click", function () {
-      focusCodeEditor();
-    });
+    btn.addEventListener("click", function () { focusCodeEditor(); });
   });
-
   document.querySelectorAll(".try-example").forEach(function (btn) {
     btn.addEventListener("click", function () {
       const box = btn.closest(".example-box");
@@ -1674,13 +1479,9 @@ print(base * charge)">
       btn.classList.add("copied");
       const prev = btn.textContent;
       btn.textContent = "Loaded ✓";
-      setTimeout(function () {
-        btn.textContent = prev;
-        btn.classList.remove("copied");
-      }, 1200);
+      setTimeout(function () { btn.textContent = prev; btn.classList.remove("copied"); }, 1200);
     });
   });
-
   btnStart.addEventListener("click", function (e) {
     if (e && typeof e.preventDefault === "function") e.preventDefault();
     titleScreen.classList.add("hidden");
@@ -1689,17 +1490,14 @@ print(base * charge)">
     if (!pyReady && !pyodide) loadPyodideAsync();
     focusCodeEditor();
   });
-
   if (location.hash === "#lesson") {
     titleScreen.classList.add("hidden");
     lesson.classList.add("visible");
     if (!pyReady && !pyodide) loadPyodideAsync();
   }
-
   btnClearOut.addEventListener("click", function () {
     setConsole('<span class="muted">Output cleared.</span>');
   });
-
   editor.addEventListener("keydown", function (e) {
     if (e.key === "Tab") {
       e.preventDefault();
@@ -1709,7 +1507,6 @@ print(base * charge)">
       editor.selectionStart = editor.selectionEnd = start + 4;
     }
   });
-
   document.querySelectorAll("[data-hint]").forEach(function (btn) {
     btn.addEventListener("click", function () {
       const i = Number(btn.getAttribute("data-hint"));
@@ -1717,31 +1514,22 @@ print(base * charge)">
       const tips = HINTS[i];
       const idx = hintIndex[i];
       if (idx >= tips.length) {
-        box.textContent = "You’ve seen every hint for this one. You’ve got this — try again!";
+        box.textContent = "You've seen every hint for this one. You've got this — try again!";
         box.classList.add("visible");
         return;
       }
       box.textContent = "💡 Tip " + (idx + 1) + ": " + tips[idx];
       box.classList.add("visible");
       hintIndex[i] = idx + 1;
-      if (hintIndex[i] >= tips.length) {
-        btn.textContent = "Hints done";
-      } else {
-        btn.textContent = "Another hint";
-      }
+      btn.textContent = hintIndex[i] >= tips.length ? "Hints done" : "Another hint";
     });
   });
-
   document.querySelectorAll("[data-check]").forEach(function (btn) {
     btn.addEventListener("click", function () {
-      const i = Number(btn.getAttribute("data-check"));
-      checkChallenge(i);
+      checkChallenge(Number(btn.getAttribute("data-check")));
     });
   });
-
-  btnRun.addEventListener("click", function () {
-    runUserCode();
-  });
+  btnRun.addEventListener("click", function () { runUserCode(); });
 
   async function loadPyodideAsync() {
     if (pyReady) return;
@@ -1755,44 +1543,29 @@ print(base * charge)">
             const s = document.createElement("script");
             s.src = "https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js";
             s.onload = resolve;
-            s.onerror = function () {
-              reject(new Error("Could not load Pyodide script from CDN."));
-            };
+            s.onerror = function () { reject(new Error("Could not load Pyodide script from CDN.")); };
             document.head.appendChild(s);
           });
         }
-        pyodide = await loadPyodide({
-          indexURL: "https://cdn.jsdelivr.net/pyodide/v0.26.4/full/"
-        });
+        pyodide = await loadPyodide({ indexURL: "https://cdn.jsdelivr.net/pyodide/v0.26.4/full/" });
         pyReady = true;
         setStatus("ready", "Python ready");
         setButtonsEnabled(true);
-        setConsole('<span class="ok">Python is ready. Type code and hit Run to train your strike!</span>');
+        setConsole('<span class="ok">Python is ready. Type code and hit Run!</span>');
       } catch (err) {
         pyLoading = null;
         setStatus("error", "Load failed");
-        setConsole(
-          '<span class="err">Couldn’t load Python. Check your internet connection and refresh the page.\n\n' +
-          escapeHtml(String(err.message || err)) + "</span>"
-        );
+        setConsole('<span class="err">Couldn\'t load Python. Check your internet and refresh.\n\n' +
+          escapeHtml(String(err.message || err)) + "</span>");
       }
     })();
     return pyLoading;
   }
-
   function escapeHtml(s) {
-    return String(s)
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;");
+    return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
   }
-
   async function executeCode(code, inspectNames) {
-    if (!pyReady || !pyodide) {
-      throw new Error("Python is still loading.");
-    }
-
+    if (!pyReady || !pyodide) throw new Error("Python is still loading.");
     await pyodide.runPythonAsync(`
 import sys
 from io import StringIO
@@ -1801,30 +1574,21 @@ _pyquest_stderr = StringIO()
 sys.stdout = _pyquest_stdout
 sys.stderr = _pyquest_stderr
 `);
-
     await pyodide.runPythonAsync(`
 import builtins
 for _b in ("print", "input", "int", "float", "str", "len", "sum", "list", "dict", "range", "type", "abs", "min", "max", "round", "bool", "open"):
     globals()[_b] = getattr(builtins, _b)
 `);
-
     await pyodide.runPythonAsync(`
 for _n in ${JSON.stringify(WIPE_VARS)}:
     globals().pop(_n, None)
 `);
-
     let runError = null;
-    try {
-      await pyodide.runPythonAsync(code);
-    } catch (e) {
-      runError = e;
-    }
-
+    try { await pyodide.runPythonAsync(code); }
+    catch (e) { runError = e; }
     const stdout = await pyodide.runPythonAsync("_pyquest_stdout.getvalue()");
     const stderr = await pyodide.runPythonAsync("_pyquest_stderr.getvalue()");
-
     await pyodide.runPythonAsync("sys.stdout = sys.__stdout__; sys.stderr = sys.__stderr__");
-
     const vars = {};
     if (inspectNames && inspectNames.length) {
       const blob = await pyodide.runPythonAsync(`
@@ -1839,6 +1603,15 @@ for _n in _names:
             _out[_n] = {"exists": True, "type": _t, "value": _v}
         elif _t in ("int", "float", "bool"):
             _out[_n] = {"exists": True, "type": _t, "value": _v}
+        elif _t == "list":
+            _out[_n] = {"exists": True, "type": _t, "value": [str(x) for x in _v], "len": len(_v), "raw": list(_v)}
+        elif callable(_v):
+            import inspect
+            try:
+                _sig = str(inspect.signature(_v))
+            except Exception:
+                _sig = ""
+            _out[_n] = {"exists": True, "type": "function", "value": getattr(_v, "__name__", _n), "sig": _sig}
         else:
             _out[_n] = {"exists": True, "type": _t, "value": str(_v)}
     else:
@@ -1847,63 +1620,43 @@ json.dumps(_out)
 `);
       Object.assign(vars, JSON.parse(blob));
     }
-
-    const usedPrint = /\bprint\s*\(/.test(code);
-
     return {
-      ok: !runError,
-      error: runError,
-      stdout: String(stdout || ""),
-      stderr: String(stderr || ""),
-      vars: vars,
-      usedPrint: usedPrint,
-      code: code
+      ok: !runError, error: runError,
+      stdout: String(stdout || ""), stderr: String(stderr || ""),
+      vars: vars, usedPrint: /\bprint\s*\(/.test(code), code: code
     };
   }
-
   function looksLikeSameFailure(blob, errMsg) {
-    const a = String(blob || "");
-    const b = String(errMsg || "");
+    const a = String(blob || ""); const b = String(errMsg || "");
     if (!a.trim()) return false;
     if (/Traceback \(most recent call last\)/i.test(a)) return true;
     const pick = (s) => {
       const m = s.match(/(TypeError|NameError|SyntaxError|ValueError|AttributeError|IndexError|KeyError|ZeroDivisionError|IndentationError)[^\n]*/);
       return m ? m[0] : "";
     };
-    const ea = pick(a);
-    const eb = pick(b);
+    const ea = pick(a); const eb = pick(b);
     return !!(ea && eb && ea === eb);
   }
-
   function formatRunConsole(result) {
     let html = "";
     const errMsg = result.error ? (result.error.message || String(result.error)) : "";
     if (result.error) {
       if (result.stdout) {
         const out = String(result.stdout);
-        if (!looksLikeSameFailure(out, errMsg)) {
-          html += escapeHtml(out);
-        }
+        if (!looksLikeSameFailure(out, errMsg)) html += escapeHtml(out);
       }
       if (result.stderr) {
         const err = String(result.stderr).trim();
-        if (err && err.length < 400 && !looksLikeSameFailure(err, errMsg)) {
+        if (err && err.length < 400 && !looksLikeSameFailure(err, errMsg))
           html += (html ? "\n" : "") + '<span class="err">' + escapeHtml(result.stderr) + "</span>";
-        }
       }
-      html += (html ? "\n" : "") +
-        '<span class="err">Python says:\n' + escapeHtml(friendlyError(errMsg)) + "</span>";
+      html += (html ? "\n" : "") + '<span class="err">Python says:\n' + escapeHtml(friendlyError(errMsg)) + "</span>";
       return html;
     }
-    if (result.stdout) {
-      html += escapeHtml(result.stdout);
-    }
-    if (result.stderr) {
-      html += (html ? "\n" : "") + '<span class="err">' + escapeHtml(result.stderr) + "</span>";
-    }
+    if (result.stdout) html += escapeHtml(result.stdout);
+    if (result.stderr) html += (html ? "\n" : "") + '<span class="err">' + escapeHtml(result.stderr) + "</span>";
     return html;
   }
-
   async function runUserCode() {
     const code = editor.value;
     if (!code.trim()) {
@@ -1914,53 +1667,22 @@ json.dumps(_out)
     try {
       const result = await executeCode(code, INSPECT_NAMES);
       let html = formatRunConsole(result);
-      if (!html) {
-        html = '<span class="muted">(Ran successfully — nothing was printed. Try print(…)!)</span>';
-      }
+      if (!html) html = '<span class="muted">(Ran successfully — nothing was printed. Try print(…)!)</span>';
       setConsole(html);
-      if (result.ok) {
-        // Reset dummy HP display baseline then apply vars
-        if (!(result.vars.enemy_hp && result.vars.enemy_hp.exists &&
-              result.vars.damage && result.vars.damage.exists)) {
-          if (!(result.vars.base && result.vars.base.exists &&
-                result.vars.charge && result.vars.charge.exists &&
-                hasOperatorOutsideStrings(code, "*"))) {
-            updateHpBar(DUMMY_MAX, DUMMY_MAX, false);
-            battleState.enemyHp = DUMMY_MAX;
-          }
-        }
-        updateBattleFromVars(result.vars, { fromRun: true, showCharge: true });
-        // If charged strike vars present with *, preview charged damage on dummy
-        const v = result.vars;
-        if (v.base && v.base.exists && isNumberType(v.base.type) &&
-            v.charge && v.charge.exists && isNumberType(v.charge.type) &&
-            hasOperatorOutsideStrings(code, "*") &&
-            !(v.enemy_hp && v.enemy_hp.exists && v.damage && v.damage.exists)) {
-          const dealt = Number(v.base.value) * Number(v.charge.value);
-          updateBattleFromVars(v, {
-            forceRemaining: Math.max(0, DUMMY_MAX - dealt),
-            forceDamage: dealt,
-            charged: true,
-            showCharge: true
-          });
-        }
+      if (result.ok && typeof updateGameFromVars === "function") {
+        updateGameFromVars(result.vars, result.stdout, { fromRun: true });
       }
     } catch (err) {
       setConsole('<span class="err">Python says: ' + escapeHtml(String(err.message || err)) + "</span>");
     }
   }
-
   function friendlyError(msg) {
     const text = String(msg || "");
     const lines = text.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
     const errRe = /^(TypeError|NameError|SyntaxError|ValueError|AttributeError|IndexError|KeyError|ZeroDivisionError|IndentationError|TabError|UnboundLocalError|OverflowError|RuntimeError|RecursionError|ModuleNotFoundError|ImportError|AssertionError|OSError|MemoryError):\s*/;
     let last = "";
     for (let i = lines.length - 1; i >= 0; i--) {
-      const line = lines[i];
-      if (errRe.test(line)) {
-        last = line;
-        break;
-      }
+      if (errRe.test(lines[i])) { last = lines[i]; break; }
     }
     if (!last) {
       for (let i = lines.length - 1; i >= 0; i--) {
@@ -1974,61 +1696,56 @@ json.dumps(_out)
       last = text.replace(/^PythonError:\s*/i, "").trim();
       if (last.length > 240) last = last.slice(0, 240) + "…";
     }
-    if (/'int' object is not callable|'float' object is not callable/i.test(text) ||
-        /'int' object is not callable|'float' object is not callable/i.test(last)) {
-      last +=
-        "\n\nUsually this means a name like print got turned into a number, or you wrote base charge instead of base * charge. Check for a missing * and that print still means print.";
+    if (/IndentationError|expected an indented block/i.test(text) || /IndentationError|expected an indented block/i.test(last)) {
+      last += "\n\nTip: lines under if / for / def need indentation (usually 4 spaces). Don't forget the colon :.";
     }
     return last;
   }
-
-  function isNumberType(t) {
-    return t === "int" || t === "float";
-  }
-
+  function isNumberType(t) { return t === "int" || t === "float"; }
   function stdoutContains(stdout, piece) {
-    return String(stdout).indexOf(String(piece)) !== -1;
+    return String(stdout).toLowerCase().indexOf(String(piece).toLowerCase()) !== -1;
   }
-
   function stdoutShowsNumber(stdout, n) {
-    const s = String(stdout);
     const re = new RegExp("(^|[^0-9.])" + String(n) + "(\\.0+)?([^0-9.]|$)");
-    return re.test(s);
+    return re.test(String(stdout));
   }
-
-  function printUsesName(code, ident) {
-    const stripped = code.replace(/(["'])(?:\\.|(?!\1).)*\1/g, '""');
-    const re = new RegExp("print\\s*\\([^)]*\\b" + ident + "\\b");
-    return re.test(stripped) || new RegExp("print\\s*\\(\\s*" + ident + "\\s*\\)").test(code);
+  function stripStrings(code) {
+    return String(code || "").replace(/(["'])(?:\\.|(?!\1).)*\1/g, '""');
   }
-
+  function hasKeyword(code, kw) {
+    return new RegExp("\\b" + kw + "\\b").test(stripStrings(code));
+  }
   function hasOperatorOutsideStrings(code, op) {
-    const stripped = code.replace(/(["'])(?:\\.|(?!\1).)*\1/g, '""');
-    if (op === "+") return /\+/.test(stripped);
+    const stripped = stripStrings(code);
+    if (op === "==") return /==/.test(stripped);
     if (op === "*") return /\*/.test(stripped);
+    if (op === "+") return /\+/.test(stripped);
     if (op === "-") return /-/.test(stripped);
+    if (op === "[") return /\[/.test(stripped);
     return stripped.indexOf(op) !== -1;
   }
-
+  function markPassed(index) {
+    passed[index] = true;
+    const ch = document.getElementById("ch-" + index);
+    if (ch) ch.classList.add("passed");
+    const stars = document.getElementById("stars-" + index);
+    if (stars) { stars.textContent = "★"; stars.classList.remove("empty"); }
+    updateProgress();
+  }
   async function checkChallenge(index) {
     const code = editor.value;
     const fb = document.getElementById("fb-" + index);
-
     if (!code.trim()) {
       fb.className = "feedback try";
       fb.textContent = "Write some code in the editor first, then Check!";
       return;
     }
-
     fb.className = "feedback";
     fb.textContent = "Checking…";
-
     try {
       const result = await executeCode(code, INSPECT_NAMES);
-
       if (result.error) {
-        const html = formatRunConsole(result) || '<span class="err">Error</span>';
-        setConsole(html);
+        setConsole(formatRunConsole(result) || '<span class="err">Error</span>');
         fb.className = "feedback try";
         fb.textContent = "Fix the Python error first, then try Check again.";
         return;
@@ -2036,133 +1753,17 @@ json.dumps(_out)
       let html = formatRunConsole(result);
       if (!html) html = '<span class="muted">(No output — did you print?)</span>';
       setConsole(html);
-      updateBattleFromVars(result.vars, { fromRun: true });
-
-      let ok = false;
-      let tip = "";
-      const attack = result.vars.attack;
-      const enemyHp = result.vars.enemy_hp;
-      const damage = result.vars.damage;
-      const base = result.vars.base;
-      const charge = result.vars.charge;
-
-      if (index === 0) {
-        if (!attack || !attack.exists) {
-          tip = "Create attack = 20 (a number, no quotes).";
-        } else if (!isNumberType(attack.type)) {
-          tip = "attack should be a number. Use attack = 20 (no quotes).";
-        } else if (Number(attack.value) !== 20) {
-          tip = "attack should equal 20 for this challenge.";
-        } else if (!result.usedPrint) {
-          tip = "Print it: print(attack)";
-        } else if (!printUsesName(code, "attack")) {
-          tip = "Print the variable: print(attack) — don’t only type print(20).";
-        } else if (!stdoutShowsNumber(result.stdout, 20)) {
-          tip = "Your print should show 20 so the ATK badge can light up.";
-        } else {
-          ok = true;
-          updateBattleFromVars(result.vars, {});
-          setBattleLog("Attack power 20 locked in!", "win");
-        }
-      } else if (index === 1) {
-        if (!enemyHp || !enemyHp.exists) {
-          tip = "Create enemy_hp = 60 (a number, no quotes).";
-        } else if (!isNumberType(enemyHp.type)) {
-          tip = "enemy_hp should be a number. Use enemy_hp = 60.";
-        } else if (Number(enemyHp.value) !== 60) {
-          tip = "enemy_hp should equal 60 for this challenge.";
-        } else if (!damage || !damage.exists) {
-          tip = "Also create damage = 20.";
-        } else if (!isNumberType(damage.type)) {
-          tip = "damage should be a number. Use damage = 20.";
-        } else if (Number(damage.value) !== 20) {
-          tip = "damage should equal 20 for this challenge.";
-        } else if (!result.usedPrint) {
-          tip = "Print the remaining HP: print(enemy_hp - damage)";
-        } else if (!hasOperatorOutsideStrings(code, "-")) {
-          tip = "Use the - operator to subtract — don’t just print(40).";
-        } else if (!stdoutShowsNumber(result.stdout, 40)) {
-          tip = "Your print should show 40 (enemy_hp minus damage).";
-        } else {
-          const hasSubExpr =
-            /\benemy_hp\s*-\s*damage\b/.test(code) ||
-            /\bdamage\s*-\s*enemy_hp\b/.test(code) ||
-            /print\s*\([^)]*-/.test(code) ||
-            /\w+\s*=\s*[^\n]*-/.test(code);
-          // Reject print-only-40: require subtraction involving the vars somehow
-          const printOnlyForty =
-            /print\s*\(\s*40\s*\)/.test(code) &&
-            !/\benemy_hp\s*-/.test(code) &&
-            !/-\s*damage\b/.test(code);
-          if (printOnlyForty || !hasSubExpr) {
-            tip = "Subtract with -: print(enemy_hp - damage)";
-          } else {
-            ok = true;
-            updateBattleFromVars(result.vars, {});
-            updateHpBar(40, 60, true);
-            showDamageFloat(20, false);
-            setBattleLog("Hit! 20 damage — dummy has 40 HP left.", "hit");
-          }
-        }
-      } else if (index === 2) {
-        if (!base || !base.exists) {
-          tip = "Create base = 15 (a number, no quotes).";
-        } else if (!isNumberType(base.type)) {
-          tip = "base should be a number. Use base = 15.";
-        } else if (Number(base.value) !== 15) {
-          tip = "base should equal 15 for this challenge.";
-        } else if (!charge || !charge.exists) {
-          tip = "Also create charge = 2.";
-        } else if (!isNumberType(charge.type)) {
-          tip = "charge should be a number. Use charge = 2.";
-        } else if (Number(charge.value) !== 2) {
-          tip = "charge should equal 2 for this challenge.";
-        } else if (!result.usedPrint) {
-          tip = "Print the charged hit: print(base * charge)";
-        } else if (!hasOperatorOutsideStrings(code, "*")) {
-          tip = "Use the * operator to multiply — don’t just print(30).";
-        } else if (!stdoutShowsNumber(result.stdout, 30)) {
-          tip = "Your print should show 30 (base times charge).";
-        } else {
-          const hasMulExpr =
-            /\bbase\s*\*\s*charge\b/.test(code) ||
-            /\bcharge\s*\*\s*base\b/.test(code) ||
-            /print\s*\([^)]*\*/.test(code) ||
-            /\w+\s*=\s*[^\n]*\*/.test(code);
-          const printOnlyThirty =
-            /print\s*\(\s*30\s*\)/.test(code) &&
-            !/\bbase\s*\*/.test(code) &&
-            !/\*\s*charge\b/.test(code);
-          if (printOnlyThirty || !hasMulExpr) {
-            tip = "Multiply with *: print(base * charge)";
-          } else {
-            ok = true;
-            updateBattleFromVars({}, {
-              forceRemaining: 30,
-              forceDamage: 30,
-              charged: true
-            });
-            // Actually 60-30=30 remaining after charged strike flourish preview
-            updateHpBar(30, 60, true);
-            showDamageFloat(30, true);
-            setBattleLog("Charged Power Strike for 30!", "win");
-          }
-        }
+      if (typeof updateGameFromVars === "function") {
+        updateGameFromVars(result.vars, result.stdout, { fromRun: true, skipAnim: true });
       }
-
-      if (ok) {
-        passed[index] = true;
-        const ch = document.getElementById("ch-" + index);
-        ch.classList.add("passed");
-        const stars = document.getElementById("stars-" + index);
-        stars.textContent = "★";
-        stars.classList.remove("empty");
+      const verdict = await gradeChallenge(index, result);
+      if (verdict.ok) {
+        markPassed(index);
         fb.className = "feedback win";
         fb.textContent = WIN_MESSAGES[index];
-        updateProgress();
       } else {
         fb.className = "feedback try";
-        fb.textContent = tip || "Not quite — tweak your code and try again!";
+        fb.textContent = verdict.tip || "Not quite — tweak your code and try again!";
       }
     } catch (err) {
       fb.className = "feedback try";
@@ -2171,10 +1772,99 @@ json.dumps(_out)
     }
   }
 
-  paintFighter();
-  updateHpBar(DUMMY_MAX, DUMMY_MAX, false);
-  editor.value = '# Set your attack for Challenge 1\n';
 
+  const WIPE_VARS = ["shout","strike","hit","cheer","boost","leftover","name","dmg","hp","n","who","card","hand"];
+  const INSPECT_NAMES = ["shout","strike","hit"];
+  const HINTS = [
+    ["def shout(name):", "Indent a print that uses name, then call shout(\"Sparkybolt\")", "Don't forget the colon after the def line."],
+    ["def strike(dmg): return dmg + 5", "print(strike(10)) should show 15", "The word return must appear in your code."],
+    ["def hit(hp, dmg): return hp - dmg", "Two names inside the parentheses, separated by a comma", "print(hit(50, 12)) → 38"]
+  ];
+  const WIN_MESSAGES = [
+    "Battle cry function ready! ⭐",
+    "strike returns dmg + 5! ⭐⭐",
+    "hit(hp, dmg) returns remaining HP! ⭐⭐⭐"
+  ];
+  const battleLog = document.getElementById("battle-log");
+  function updateGameFromVars(vars, stdout, opts) {
+    const atk = document.getElementById("atk-val");
+    const heal = document.getElementById("heal-val");
+    const cAtk = document.getElementById("compact-atk");
+    const lines = String(stdout || "").trim().split(/\r?\n/).filter(Boolean);
+    let num = null;
+    for (let i = lines.length - 1; i >= 0; i--) {
+      const m = lines[i].match(/-?\d+(\.\d+)?/);
+      if (m) { num = Number(m[0]); break; }
+    }
+    if (vars.strike && vars.strike.exists) {
+      if (atk) atk.textContent = num != null ? String(num) : "fn";
+      if (cAtk) cAtk.textContent = num != null ? String(num) : "fn";
+      battleLog.textContent = "strike is ready" + (num != null ? " — last number " + num : ".");
+    }
+    if (vars.hit && vars.hit.exists) {
+      if (heal) heal.textContent = "HP " + (num != null ? num : "fn");
+      battleLog.textContent = "hit is ready" + (num != null ? " — remaining " + num : ".");
+    }
+    if (vars.shout && vars.shout.exists) {
+      battleLog.textContent = "shout is ready — cry heard in the console!";
+    }
+    if (lines.length && !(vars.strike && vars.strike.exists) && !(vars.hit && vars.hit.exists)) {
+      battleLog.textContent = "Console said: " + lines[lines.length - 1];
+    }
+  }
+  function onAllPassed() {
+    document.getElementById("battle-stage").classList.add("victory");
+    battleLog.textContent = "Battle Moves mastered! ⭐";
+  }
+  async function gradeChallenge(index, result) {
+    const code = result.code;
+    const out = String(result.stdout || "");
+    if (index === 0) {
+      if (!hasKeyword(code, "def")) return { ok: false, tip: "Use def to define shout." };
+      if (!/def\s+shout\s*\(/.test(code)) return { ok: false, tip: "Name the function shout: def shout(name):" };
+      if (!/shout\s*\(/.test(code.replace(/def\s+shout\s*\([^)]*\)\s*:/, ""))) {
+        return { ok: false, tip: "Call shout(...) after you define it." };
+      }
+      if (!result.usedPrint) return { ok: false, tip: "shout should print a battle cry (use print inside)." };
+      if (!out.trim()) return { ok: false, tip: "Call shout so something prints." };
+      return { ok: true };
+    }
+    if (index === 1) {
+      if (!/def\s+strike\s*\(/.test(code)) return { ok: false, tip: "Define def strike(dmg):" };
+      if (!hasKeyword(code, "return")) return { ok: false, tip: "Use return dmg + 5 inside strike." };
+      if (!/\+\s*5|5\s*\+/.test(stripStrings(code))) return { ok: false, tip: "Return dmg + 5 (plus five)." };
+      if (!result.usedPrint) return { ok: false, tip: "print(strike(...)) to show the result." };
+      // Verify by calling in pyodide if function exists
+      const fn = result.vars.strike;
+      if (!fn || !fn.exists) return { ok: false, tip: "strike must be defined." };
+      try {
+        const v = await pyodide.runPythonAsync("strike(10)");
+        if (Number(v) !== 15) return { ok: false, tip: "strike(10) should return 15 (dmg + 5)." };
+      } catch (e) {
+        return { ok: false, tip: "strike(dmg) should return dmg + 5." };
+      }
+      return { ok: true };
+    }
+    if (index === 2) {
+      if (!/def\s+hit\s*\(/.test(code)) return { ok: false, tip: "Define def hit(hp, dmg):" };
+      if (!hasKeyword(code, "return")) return { ok: false, tip: "return hp - dmg inside hit." };
+      const sigMatch = code.match(/def\s+hit\s*\(([^)]*)\)/);
+      if (!sigMatch || sigMatch[1].split(",").filter(function (p) { return p.trim(); }).length < 2) {
+        return { ok: false, tip: "hit needs two parameters: hp and dmg." };
+      }
+      if (!result.usedPrint) return { ok: false, tip: "print(hit(...)) to show remaining HP." };
+      try {
+        const v = await pyodide.runPythonAsync("hit(50, 12)");
+        if (Number(v) !== 38) return { ok: false, tip: "hit(50, 12) should return 38." };
+      } catch (e) {
+        return { ok: false, tip: "hit(hp, dmg) should return hp - dmg." };
+      }
+      return { ok: true };
+    }
+    return { ok: false };
+  }
+
+  editor.value = '# Define a move with def for Challenge 1\n';
   loadPyodideAsync();
 })();
 </script>

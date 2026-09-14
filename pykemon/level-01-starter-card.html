@@ -1076,23 +1076,23 @@
         You create one with <code style="color:var(--gold)">=</code>.
         Strings (words) need quotes. Numbers do not.
       </p>
-      <div class="example-box" data-code='name = "Sparkybolt"
+      <div class="example-box" data-code='name = "Mossleap"
 print(name)'>
         <div class="example-code">
-          <span class="comment"># A name is text — use quotes</span><br>
-          name = <span class="str">"Sparkybolt"</span><br>
+          <span class="comment"># Practice name — different from the Check challenge</span><br>
+          name = <span class="str">"Mossleap"</span><br>
           <span class="fn">print</span>(name)<br>
-          <span class="out">→ Sparkybolt</span>
+          <span class="out">→ Mossleap</span>
         </div>
         <button type="button" class="try-example">Try this ▸</button>
       </div>
-      <div class="example-box" data-code="hp = 60
+      <div class="example-box" data-code="hp = 45
 print(hp)">
         <div class="example-code">
-          <span class="comment"># HP is a number — no quotes</span><br>
-          hp = <span class="num">60</span><br>
+          <span class="comment"># Practice HP — Check will ask for a different number</span><br>
+          hp = <span class="num">45</span><br>
           <span class="fn">print</span>(hp)<br>
-          <span class="out">→ 60</span>
+          <span class="out">→ 45</span>
         </div>
         <button type="button" class="try-example">Try this ▸</button>
       </div>
@@ -1101,12 +1101,15 @@ print(hp)">
         because <code>type</code> is already a Python word.
         Mix variables in one <code>print</code>:
       </p>
-      <div class="example-box" data-code='ptype = "Electric"
+      <div class="example-box" data-code='name = "Mossleap"
+ptype = "Grass"
 print(name, "is", ptype)'>
         <div class="example-code">
-          ptype = <span class="str">"Electric"</span><br>
+          <span class="comment"># Practice type — Check uses Electric / Fire / Water</span><br>
+          name = <span class="str">"Mossleap"</span><br>
+          ptype = <span class="str">"Grass"</span><br>
           <span class="fn">print</span>(name, <span class="str">"is"</span>, ptype)<br>
-          <span class="out">→ Sparkybolt is Electric</span>
+          <span class="out">→ Mossleap is Grass</span>
         </div>
         <button type="button" class="try-example">Try this ▸</button>
       </div>
@@ -1183,7 +1186,7 @@ print(name, "is", ptype)'>
       <li><strong>hp</strong> is a number (no quotes) — the hit points on the badge.</li>
       <li><strong>ptype</strong> is a string for Electric, Fire, or Water — it paints the type gem.</li>
     </ul>
-    <p style="margin-top:1.25rem;font-size:1.05rem;">Level 2 will add <strong>attacks</strong>. Rest up, trainer! ⚡</p>
+    <p style="margin-top:1.25rem;font-size:1.05rem;">Ready for <strong>Power Strike</strong>? <a href="level-02-power-strike.html" style="color:var(--gold-bright)">Level 2 →</a></p>
   </section>
 
   <p class="footer-note"><a href="../index.html">← PyQuest &amp; PyKémon hub</a> · Real Python in your browser via Pyodide · No account needed</p>
@@ -1847,7 +1850,7 @@ json.dumps(_out)
     }
   }
 
-  editor.value = 'name = "Sparkybolt"\nprint(name)\n';
+  editor.value = '# Your starter goes here — pick a name for Challenge 1\n';
 
   loadPyodideAsync();
 })();
